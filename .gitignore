@@ -79,3 +79,10 @@ DerivedData*/
 *.dicom
 Database.sql*
 ._*
+
+# Generated legacy framework links and Finder folder icons
+/HorosAPI
+/HorosDCM
+/OsiriXAPI
+/OsiriX Headers
+Icon?

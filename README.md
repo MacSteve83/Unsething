@@ -74,4 +74,4 @@ Please include your macOS version, CPU architecture, build command and reproduct
 
 ## License
 
-The Horos-derived application is distributed under **GNU LGPL version 3**; individual third-party components retain their own licenses. [LICENSE](LICENSE) includes LGPLv3 and the incorporated GPLv3 terms. [LICENSES/](LICENSES/) contains additional notices; source-file headers and upstream dependency notices are retained.
+The Horos-derived application is distributed under **GNU LGPL version 3**; individual third-party components retain their own licenses. [LICENSE](LICENSE) contains LGPLv3; its incorporated GPLv3 terms are provided in [LICENSES/GPL-3.0.txt](LICENSES/GPL-3.0.txt). [LICENSES/](LICENSES/) contains additional notices; source-file headers and upstream dependency notices are retained.

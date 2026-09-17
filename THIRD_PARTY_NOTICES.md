@@ -1,6 +1,6 @@
 # Third-party notices
 
-Unsething is derived from Horos, originally based on OsiriX. Copyright notices and license headers in inherited source files remain intact. [NOTICE](NOTICE) explains the provenance and modifications. [LICENSE](LICENSE) contains LGPLv3 and its incorporated GPLv3 terms.
+Unsething is derived from Horos, originally based on OsiriX. Copyright notices and license headers in inherited source files remain intact. [NOTICE](NOTICE) explains the provenance and modifications. [LICENSE](LICENSE) contains LGPLv3; the incorporated GPLv3 terms are in [LICENSES/GPL-3.0.txt](LICENSES/GPL-3.0.txt). The historical combined text is preserved in [LICENSES/Horos-LGPL-GPL-original.txt](LICENSES/Horos-LGPL-GPL-original.txt).
 
 This index describes the current development build. It does not replace individual component licenses or the notices embedded in upstream sources and archives.
 

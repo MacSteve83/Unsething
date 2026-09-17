@@ -4,6 +4,10 @@ set -x
 
 framework_path="$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/Horos.framework"
 
+# Some builds provide the historical framework; renamed builds use
+# UnsethingAPI.framework. Do not generate dangling aliases in the source tree
+# when the historical framework is absent.
+if [ -d "$framework_path" ]; then
 # many plugins are hard-linked to the API framework, and its name changed over time
 
 alts=( HorosAPI OsiriXAPI 'OsiriX Headers' HorosDCM)
@@ -24,6 +28,8 @@ done
 #exception since this is temporary
 cd "$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/OsiriX Headers.framework"
 sed -i '' "s/org.horosproject.OsiriX\ Headers/org.horosproject.OsiriXHeaders/" "Versions/A/Resources/Info.plist"
+
+fi
 
 # Keep application and dependency notices with every locally built bundle.
 license_dir="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/Licenses"
