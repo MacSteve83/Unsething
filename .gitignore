@@ -1,0 +1,81 @@
+.DS_Store
+.Trashes
+*.swp
+*.lock
+*~.nib
+DerivedData/
+.build-tools/
+build/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata
+*.moved-aside
+*.xcsettings
+__MACOSX
+
+DICOMPrint/xercesc
+DICOMPrint/libxerces-c.27.dylib
+DICOMPrint/libdcmprintscu.dylib
+
+Binaries/3DconnexionClient.framework/
+Binaries/DB_Previous_Models/
+Binaries/DCMTK/
+Binaries/dciodvfy
+Binaries/Growl.framework/
+Binaries/ILCrashReporter.framework/
+Binaries/libPapyrusToolkit.a
+Binaries/Ming/
+Binaries/OsiriX Report.template
+Binaries/PAGES/
+Binaries/ReportsToPDF/odt2pdf/build/odt2pdf
+Binaries/weasis/
+Binaries/._OsiriX Report.template
+Binaries/FeedbackReporter.framework/
+Binaries/homephone.framework/
+
+*.xcscmblueprint
+DICOMPrint/DICOMPrint
+Unsething.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+DerivedData-Intel/
+
+# Local build variants and distribution artifacts
+DerivedData*/
+.cmakeenv
+.cmakehash
+
+# Separately distributed plugins: excluded from the public sources
+/Plugins/
+/Binaries/EmbeddedPlugins/
+*.horosplugin
+*.osirixplugin
+*.horosplugin.zip
+*.osirixplugin.zip
+
+# Pinned upstream snapshots downloaded by script/fetch_dependencies.py
+/OpenSSL/
+/DCMTK/
+/GDCM/
+/ITK/
+/VTK/
+/CharLS/
+/OpenJPEG/
+/FeedbackReporter/
+/.dependency-cache/
+/.dependency-extract-*/
+# Local or generated data
+*.dmg
+*.xcarchive/
+*.p12
+*.pfx
+*.mobileprovision
+
+# Private development metadata and clinical data
+/.codex/
+/.agents/
+*.dcm
+*.dicom
+Database.sql*
+._*

@@ -1,0 +1,22 @@
+//
+//  Unsething.xcconfig
+//  Unsething
+//
+//  Created by Felix Ritter on 29.07.22.
+//  Copyright © 2022 The Horos Project. All rights reserved.
+//
+
+/// String that uniquely identifies the bundle
+PRODUCT_BUNDLE_IDENTIFIER_PREFIX = com.unsething
+
+/// Current version of the project
+CURRENT_PROJECT_VERSION = 20220801
+
+/// User-visible version of the project
+MARKETING_VERSION = 1.2.2
+
+/// Copyright notice for the bundle
+HUMAN_READABLE_VERSION = Unsething v$(MARKETING_VERSION)
+
+/// Copyright notice for the bundle
+HUMAN_READABLE_COPYRIGHT = © 2026 Unsething. Portions © The Horos Project & OsiriX Team

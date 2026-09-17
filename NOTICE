@@ -1,0 +1,20 @@
+Unsething
+
+Unsething is a modified work derived from the Horos Project, originally based on
+OsiriX. The upstream application's LGPL version 3 notice is preserved verbatim
+in LICENSES/Horos-upstream-NOTICE.txt. Original author and copyright notices in
+source files remain applicable. The license texts are in LICENSE and COPYING.LESSER.
+
+Unsething modifications include branding, Italian/English localization, toolbar
+and icon fixes, discovery and opening of local legacy databases, build and
+packaging scripts, and integration of newer imaging
+and networking libraries. See Changelog.md and docs/DEVELOPMENT.md.
+
+The preserved upstream notice describes its historical build, including Grok
+and HorosCloud. Those statements do not describe the current Unsething build:
+Grok is absent and JPEG 2000 decoding/encoding uses OpenJPEG. Upstream product
+names and trademarks identify provenance or compatibility, not endorsement.
+
+Third-party code and resources retain their original licenses. See
+THIRD_PARTY_NOTICES.md and LICENSES. This source import does not retag or
+represent earlier distributed installers as builds of this commit.

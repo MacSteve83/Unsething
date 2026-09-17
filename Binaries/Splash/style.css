@@ -1,0 +1,201 @@
+body {
+	font-size: 12px;
+	font-family: "Lucida Grande";
+	margin: 0;
+}
+
+#header {
+	padding-top: 1rem;
+}
+
+#header:after {
+	content: '';
+	position: absolute;
+	top: 49px;
+	left: 0;
+	right: 0;
+	border-bottom: 1px solid #E6E6E6;
+}
+
+.title-box {
+	background-color: #79a9d9;
+	color: white;
+	padding: 1.25rem 1.5rem;
+	display: inline-block;
+	border-bottom-right-radius: 10px;
+	border-top-right-radius: 10px;
+	position: relative;
+	z-index: 10;
+	min-width: 8rem;
+}
+
+h1 {
+	margin: 0;
+	font-size: 22px;
+	color: white;
+}
+
+h2 {
+	color: #5f95c8;
+	margin-top: 0;
+	margin-bottom: 0.75rem;
+}
+
+p {
+	margin-top: 0;
+	margin-bottom: 0.5rem;
+}
+
+#content {
+	padding: 1.5rem 1.5rem 0;
+}
+
+.content-block {
+	margin-bottom: 1.5rem;
+}
+
+.box-list {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 0.25rem -0.25rem -0.25rem -0.25rem;
+}
+.box {
+	margin: 0.25rem;
+	background-color: #edf5fb;
+	padding: 0.5rem;
+	border-radius: 5px;
+	font-size: 13px;
+	flex-grow: 1;
+	font-weight: bold;
+}
+.box-link {
+	font-size: 11px;
+	font-weight: normal;
+	color: rgba(0,0,0,0.5);
+}
+
+.card-list {
+	display: flex;
+	flex-wrap: wrap;
+	margin: -0.5rem;
+}
+.card {
+	text-align: center;
+	padding: 1rem;
+	flex-basis: 40%;
+	flex-grow: 1;
+	border-radius: 8px;
+	margin: 0.5rem;
+	box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.3), 0px 2px 1px 0px rgba(0, 0, 0, 0.2);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-direction: column;
+	min-height: 120px;
+}
+.partner-logo {
+	max-width: 200px;
+	margin: 1rem 0;
+}
+.partner-logo-wide {
+	max-width: 520px;
+	width: 100%;
+}
+.line-break-fix {
+	max-width: 190px;
+}
+	.card-link {
+		font-size: 12px;
+		font-weight: normal;
+		color: rgba(0,0,0,0.5);
+	  margin-top: auto;
+	}
+	.partner-card {
+		padding: 1.2rem;
+		min-height: 150px;
+		justify-content: center;
+	}
+	.partner-logo-developed {
+		max-width: 560px;
+		width: 100%;
+		margin: 0;
+	}
+	.partner-brand-card {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		text-align: left;
+		padding: 1.15rem 1.25rem;
+		border: 1px solid #d9e8f0;
+		border-radius: 8px;
+		background: linear-gradient(180deg, #fbfdff 0%, #eef8fb 100%);
+		box-sizing: border-box;
+	}
+	.partner-mark {
+		width: 86px;
+		height: 86px;
+		margin-right: 1.25rem;
+		flex: 0 0 86px;
+		border-radius: 50%;
+		background-color: #eef8fb;
+		background-image: url("./images/elettromedical-mark.png");
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: 66px 66px;
+		box-shadow: inset 0 0 0 1px rgba(24, 132, 73, 0.18), 0 1px 2px rgba(0, 0, 0, 0.12);
+	}
+	.partner-details {
+		flex: 1;
+		min-width: 0;
+	}
+	.partner-kicker {
+		font-size: 12px;
+		color: #5a6872;
+		margin-bottom: 0.2rem;
+	}
+	.partner-name {
+		margin: 0;
+		color: #178449;
+		font-family: Georgia, "Times New Roman", serif;
+		font-size: 26px;
+		font-weight: normal;
+		line-height: 1.1;
+	}
+	.partner-subtitle {
+		color: #2f3b44;
+		font-size: 13px;
+		margin-top: 0.35rem;
+	}
+	.partner-data {
+		margin-top: 0.75rem;
+		padding-top: 0.65rem;
+		border-top: 1px solid rgba(23, 132, 73, 0.18);
+		color: #38434a;
+		font-size: 12px;
+		line-height: 1.45;
+	}
+	.partners-invite {
+	  font-size: 14px;
+		color: rgba(0,0,0,0.7);
+	text-align: center;
+  margin-top: 3rem;
+}
+.partners-invite-mail {
+  font-weight: bold;
+	margin-top: -0.25rem;
+}
+
+ul {
+	padding-left: 1.75rem;
+	margin-top: 0.5rem;
+	margin-bottom: 1rem;
+}
+
+.version {
+	padding: 0.25rem 0.5rem;
+	font-weight: 600;
+	font-size: 12px;
+	background-color: #F0F0F0;
+	border-radius: 5px;
+	display: inline-block;
+}

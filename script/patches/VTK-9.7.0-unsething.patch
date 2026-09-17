@@ -1,0 +1,14 @@
+--- a/IO/Image/vtkImageImport.cxx
++++ b/IO/Image/vtkImageImport.cxx
+@@ -265,6 +265,11 @@
+ 
+   data->SetExtent(this->DataExtent);
+   data->GetPointData()->GetScalars()->SetVoidArray(ptr, size, 1);
++  // AllocateScalars above temporarily reduces the tuple count to one. When
++  // reusing the same imported buffer, SetVoidArray may return early in VTK 9.7;
++  // restore the logical size even when the pointer and capacity are unchanged.
++  data->GetPointData()->GetScalars()->SetNumberOfTuples(
++    size / this->NumberOfScalarComponents);
+   data->GetPointData()->GetScalars()->SetName(this->ScalarArrayName);
+ }
+ 

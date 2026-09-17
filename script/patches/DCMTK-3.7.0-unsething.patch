@@ -1,0 +1,2272 @@
+--- a/dcmapps/include/dcmtk/dcmapps/dcm2img.h
++++ b/dcmapps/include/dcmtk/dcmapps/dcm2img.h
+@@ -27,7 +27,7 @@
+ #include "dcmtk/dcmdata/dctk.h"          /* for various dcmdata headers */
+ #include "dcmtk/dcmdata/dcuid.h"         /* for dcmtk version name */
+ #include "dcmtk/dcmimage/diregist.h"     /* include to support color images */
+-#include "dcmtk/dcmimgle/dcmimage.h"     /* for DicomImage */
++#include "dcmtk/dcmimgle/dcmimage.h"     /* for DCMTKDicomImage */
+ #include "dcmtk/dcmimgle/diciefn.h"      /* for DiCIELABFunction */
+ #include "dcmtk/dcmimgle/digsdfn.h"      /* for DiGSDFunction */
+ #include "dcmtk/dcmjpeg/dipijpeg.h"      /* for dcmimage JPEG plugin */
+@@ -116,7 +116,7 @@
+ 
+ static void dumpImageParameters(
+   E_TransferSyntax xfer,
+-  DicomImage *di,
++  DCMTKDicomImage *di,
+   DcmDataset *dataset,
+   const char *ifname)
+ {
+@@ -236,11 +236,11 @@
+     }
+ }
+ 
+-static DicomImage *convertToGrayscale(DicomImage *di)
++static DCMTKDicomImage *convertToGrayscale(DCMTKDicomImage *di)
+ {
+     if (di == NULL) return NULL;
+     OFLOG_INFO(dcm2imgLogger, "converting image to grayscale");
+-    DicomImage *newimage = di->createMonochromeImage();
++    DCMTKDicomImage *newimage = di->createMonochromeImage();
+     if (newimage == NULL)
+     {
+         OFLOG_FATAL(dcm2imgLogger, "Out of memory or cannot convert to monochrome image");
+@@ -248,7 +248,7 @@
+     }
+     else if (newimage->getStatus() != EIS_Normal)
+     {
+-        OFLOG_FATAL(dcm2imgLogger, DicomImage::getString(newimage->getStatus()));
++        OFLOG_FATAL(dcm2imgLogger, DCMTKDicomImage::getString(newimage->getStatus()));
+         return NULL;
+     }
+     else
+@@ -259,7 +259,7 @@
+ }
+ 
+ static void processOverlayParameters(
+-  DicomImage *di,
++  DCMTKDicomImage *di,
+   int *overlayArray,
+   EM_Overlay overlayMode,
+   OFCmdFloat foregroundDensity,
+@@ -290,7 +290,7 @@
+ 
+ 
+ static int processVOIParameters(
+-  DicomImage *di,
++  DCMTKDicomImage *di,
+   int windowType,
+   OFCmdUnsignedInt windowParameter,
+   OFCmdFloat windowCenter,
+@@ -377,7 +377,7 @@
+ 
+ 
+ static void processPLUTParameters(
+-  DicomImage *di,
++  DCMTKDicomImage *di,
+   ES_PresentationLut presShape)
+ {
+     if (di == NULL) return;
+@@ -394,8 +394,8 @@
+     }
+ }
+ 
+-static DicomImage *performClipping(
+-  DicomImage *di,
++static DCMTKDicomImage *performClipping(
++  DCMTKDicomImage *di,
+   int useClip,
+   int scaleType,
+   OFCmdSignedInt left,
+@@ -409,7 +409,7 @@
+     {
+          OFLOG_INFO(dcm2imgLogger, "clipping image to (" << left << "," << top << "," << width
+              << "," << height << ")");
+-         DicomImage *newimage = di->createClippedImage(left, top, width, height);
++         DCMTKDicomImage *newimage = di->createClippedImage(left, top, width, height);
+          if (newimage == NULL)
+          {
+              OFLOG_FATAL(dcm2imgLogger, "clipping to (" << left << "," << top << "," << width
+@@ -417,7 +417,7 @@
+              return NULL;
+          } else if (newimage->getStatus() != EIS_Normal)
+          {
+-             OFLOG_FATAL(dcm2imgLogger, DicomImage::getString(newimage->getStatus()));
++             OFLOG_FATAL(dcm2imgLogger, DCMTKDicomImage::getString(newimage->getStatus()));
+              return NULL;
+          }
+          else
+@@ -430,7 +430,7 @@
+ }
+ 
+ static void performRotation(
+-  DicomImage *di,
++  DCMTKDicomImage *di,
+   int rotateDegree)
+ {
+     if (di == NULL) return;
+@@ -443,7 +443,7 @@
+ }
+ 
+ static void performFlip(
+-  DicomImage *di,
++  DCMTKDicomImage *di,
+   int flipType)
+ {
+     if (di == NULL) return;
+@@ -472,8 +472,8 @@
+     }
+ }
+ 
+-static DicomImage *performScaling(
+-  DicomImage *di,
++static DCMTKDicomImage *performScaling(
++  DCMTKDicomImage *di,
+   int useClip,
+   int scaleType,
+   OFCmdSignedInt left,
+@@ -487,7 +487,7 @@
+ {
+     if (scaleType > 0)
+     {
+-        DicomImage *newimage;
++        DCMTKDicomImage *newimage;
+         if (useClip)
+             OFLOG_INFO(dcm2imgLogger, "clipping image to (" << left << "," << top << "," << width << "," << height << ")");
+         switch (scaleType)
+@@ -548,7 +548,7 @@
+         }
+         else if (newimage->getStatus() != EIS_Normal)
+         {
+-            OFLOG_FATAL(dcm2imgLogger, DicomImage::getString(newimage->getStatus()));
++            OFLOG_FATAL(dcm2imgLogger, DCMTKDicomImage::getString(newimage->getStatus()));
+             delete newimage;
+             return NULL;
+         }
+@@ -562,7 +562,7 @@
+ }
+ 
+ static const char *getDefaultExtension(
+-  DicomImage *di,
++  DCMTKDicomImage *di,
+   E_FileType fileType)
+ {
+     if (di == NULL) return "";
+@@ -1685,7 +1685,7 @@
+ #endif /* BUILD_DCM2IMG_AS_DCM2KIMG */
+ 
+     DcmDataset *dataset = NULL;
+-    DicomImage *di = NULL;
++    DCMTKDicomImage *di = NULL;
+     DiDisplayFunction *disp = NULL;
+     E_TransferSyntax xfer = EXS_Unknown;
+ 
+@@ -1719,7 +1719,7 @@
+         opt_compatibilityMode |= CIF_UsePartialAccessToPixelData;
+     }
+ 
+-    di = new DicomImage(dfile, xfer, opt_compatibilityMode, opt_frame - 1, opt_frameCount);
++    di = new DCMTKDicomImage(dfile, xfer, opt_compatibilityMode, opt_frame - 1, opt_frameCount);
+     if (di == NULL)
+     {
+         OFLOG_FATAL(dcm2imgLogger, "Out of memory");
+@@ -1729,7 +1729,7 @@
+ 
+     if (di->getStatus() != EIS_Normal)
+     {
+-        OFLOG_FATAL(dcm2imgLogger, DicomImage::getString(di->getStatus()));
++        OFLOG_FATAL(dcm2imgLogger, DCMTKDicomImage::getString(di->getStatus()));
+         exitCode = 1;
+         goto cleanup;
+     }
+--- a/dcmdata/include/dcmtk/dcmdata/dcddirif.h
++++ b/dcmdata/include/dcmtk/dcmdata/dcddirif.h
+@@ -51,6 +51,7 @@
+ {
+   public:
+ 
++
+     /** destructor (virtual)
+      */
+     virtual ~DicomDirImagePlugin() {}
+@@ -108,6 +109,9 @@
+ {
+ 
+   public:
++    OFBool enableOneIconPerSeriesMode(OFBool mode = OFTrue) { OFBool old = OneIconPerSeriesMode; OneIconPerSeriesMode = mode; return old; }
++    void addOneImagePerSeries();
++
+ 
+     /** list of supported media storage application profiles
+      */
+@@ -1587,6 +1591,8 @@
+ 
+ 
+   private:
++    OFBool OneIconPerSeriesMode = OFFalse;
++
+ 
+     /// pointer to the current DICOMDIR object
+     DcmDicomDir *DicomDir;
+--- a/dcmdata/include/dcmtk/dcmdata/dcdeftag.h
++++ b/dcmdata/include/dcmtk/dcmdata/dcdeftag.h
+@@ -5375,3 +5375,22 @@
+ #define DCM_GenericGroupLength                   DcmTagKey(0x0000, 0x0000) /* (0x0000-u-0xffff,0x0000) */
+ 
+ #endif /* !DCDEFTAG_H */
++
++// Unsething private ROI archive tag.
++#define DCM_OsirixROI DcmTagKey(0x0071, 0x0011)
++
++// Legacy names retained for existing Unsething archive and query code.
++#define DCM_AcquisitionDatetime DcmTagKey(0x0008, 0x002a)
++#define DCM_ReferringPhysiciansName DcmTagKey(0x0008, 0x0090)
++#define DCM_PerformingPhysiciansName DcmTagKey(0x0008, 0x1050)
++#define DCM_ManufacturersModelName DcmTagKey(0x0008, 0x1090)
++#define DCM_PatientsName DcmTagKey(0x0010, 0x0010)
++#define DCM_PatientsBirthDate DcmTagKey(0x0010, 0x0030)
++#define DCM_PatientsSex DcmTagKey(0x0010, 0x0040)
++#define DCM_PatientsAge DcmTagKey(0x0010, 0x1010)
++#define DCM_CardiacTriggerSequence DcmTagKey(0x0018, 0x9118)
++#define DCM_ImageGroupLength DcmTagKey(0x0020, 0x0000)
++#define DCM_TriggerDelayTime DcmTagKey(0x0020, 0x9153)
++#define DCM_FramesOfInterestDescription DcmTagKey(0x0028, 0x6022)
++#define DCM_StudyComments DcmTagKey(0x0032, 0x4000)
++#define DCM_InterpretationStatusID DcmTagKey(0x4008, 0x0212)
+--- a/dcmdata/libsrc/dccodec.cc
++++ b/dcmdata/libsrc/dccodec.cc
+@@ -199,6 +199,9 @@
+ 
+ OFCondition DcmCodec::updateImageType(DcmItem *dataset)
+ {
++  // Preserve Unsething ImageType metadata during recompression.
++  return dataset ? EC_Normal : EC_IllegalCall;
++
+   if (dataset == NULL) return EC_IllegalCall;
+ 
+   DcmElement *elem = NULL;
+--- a/dcmdata/libsrc/dcddirif.cc
++++ b/dcmdata/libsrc/dcddirif.cc
+@@ -1409,9 +1409,71 @@
+ 
+ 
+ // write the current DICOMDIR object to file
++void DicomDirInterface::addOneImagePerSeries() {
++    DcmDirectoryRecord* rootRecord = &(DicomDir->getRootRecord());
++    
++//  printf("root record card is %d\n", rootRecord->cardSub());
++    if( rootRecord)
++    {
++        for (unsigned int i = 0; i < rootRecord->cardSub(); ++i) {
++        DcmDirectoryRecord* patientRecord = rootRecord->getSub(i);
++        if( patientRecord)
++            {
++        //      printf("\trecord sub %d type is %d (10 is patient), with card %d\n", i, patientRecord->getRecordType(), patientRecord->cardSub());
++                for (unsigned int x = 0; x < patientRecord->cardSub(); ++x) {
++                    DcmDirectoryRecord* studyRecord = patientRecord->getSub(x);
++                    if( studyRecord)
++                    {
++            //          printf("\t\trecord sub %d type is %d (15 is study), with card %d\n", i, studyRecord->getRecordType(), studyRecord->cardSub());
++                        for (unsigned int y = 0; y < studyRecord->cardSub(); ++y) {
++                            DcmDirectoryRecord* seriesRecord = studyRecord->getSub(y);
++                            if( seriesRecord)
++                            {
++                //              printf("\t\t\trecord sub %d type is %d (14 is series), with card %d\n", i, seriesRecord->getRecordType(), seriesRecord->cardSub());
++                //              for (unsigned int i = 0; i < seriesRecord->cardSub(); ++i) {
++                //                  DcmDirectoryRecord* imageRecord = seriesRecord->getSub(i);
++                //                  printf("\t\t\t\trecord sub %d type is %d (4 is image), with card %d\n", i, imageRecord->getRecordType(), imageRecord->cardSub());
++                //              }
++                                
++                                DcmDirectoryRecord* imageRecord = seriesRecord->getSub(seriesRecord->cardSub()/2);
++                                if( imageRecord)
++                                {
++                                    if (imageRecord->getRecordType() != ERT_Image)
++                                        continue;
++                                    
++                    //              printf("\t\t\t\tusing image at index %d, %s\n", seriesRecord->cardSub()/2, imageRecord->getRecordsOriginFile());
++                    //              imageRecord->print(std::cout, DCMTypes::PF_shortenLongTagValues, 10);
++                    //              printf("\t\t\t\troot:");
++                    //              rootRecord->print(std::cout, DCMTypes::PF_shortenLongTagValues, 10);
++                                    
++                                    unsigned int iconSize = 128; // default icon size for one thumb per series
++                                    if (IconSize)
++                                        iconSize = IconSize;
++                                    
++                                    DcmFileFormat fileformat;
++                                    if (fileformat.loadFile(imageRecord->getRecordsOriginFile()).bad())
++                                        continue;
++
++                                    OFCondition status = addIconImage(seriesRecord, fileformat.getDataset(), iconSize, OFString(imageRecord->getRecordsOriginFile().getCharPointer()));
++                                    if (status.bad())
++                                    {
++                                        DCMDATA_WARN("cannot create IconImageSequence");
++                                    }
++                                }
++                            }
++                        }
++                    }
++                }
++            }
++        }
++    }
++}
++
+ OFCondition DicomDirInterface::writeDicomDir(const E_EncodingType encodingType,
+                                              const E_GrpLenEncoding groupLength)
+ {
++    if (OneIconPerSeriesMode && isDicomDirValid()) addOneImagePerSeries();
++
+     OFCondition result = EC_InvalidDICOMDIR;
+     /* check whether DICOMDIR object is valid */
+     if (isDicomDirValid())
+@@ -5299,7 +5361,7 @@
+ }
+ 
+ 
+-// add support for DicomImage class(es) - required for icon images
++// add support for DCMTKDicomImage class(es) - required for icon images
+ OFBool DicomDirInterface::addImageSupport(DicomDirImagePlugin *plugin)
+ {
+     // store pointer to plugin
+--- a/dcmimage/apps/dcmquant.cc
++++ b/dcmimage/apps/dcmquant.cc
+@@ -25,7 +25,7 @@
+ #include "dcmtk/dcmdata/dctk.h"          /* for various dcmdata headers */
+ #include "dcmtk/dcmdata/cmdlnarg.h"      /* for prepareCmdLineArgs */
+ #include "dcmtk/dcmdata/dcuid.h"         /* for dcmtk version name */
+-#include "dcmtk/dcmimgle/dcmimage.h"     /* for DicomImage */
++#include "dcmtk/dcmimgle/dcmimage.h"     /* for DCMTKDicomImage */
+ 
+ #include "dcmtk/ofstd/ofconapp.h"        /* for OFConsoleApplication */
+ #include "dcmtk/ofstd/ofcmdln.h"         /* for OFCommandLine */
+@@ -435,11 +435,11 @@
+ 
+     OFLOG_INFO(dcmquantLogger, "preparing pixel data.");
+ 
+-    // create DicomImage object
+-    DicomImage di(dataset, opt_oxfer, opt_compatibilityMode, opt_frame - 1, opt_frameCount);
++    // create DCMTKDicomImage object
++    DCMTKDicomImage di(dataset, opt_oxfer, opt_compatibilityMode, opt_frame - 1, opt_frameCount);
+     if (di.getStatus() != EIS_Normal)
+     {
+-        OFLOG_FATAL(dcmquantLogger, DicomImage::getString(di.getStatus()));
++        OFLOG_FATAL(dcmquantLogger, DCMTKDicomImage::getString(di.getStatus()));
+         return 1;
+     }
+ 
+--- a/dcmimage/apps/dcmscale.cc
++++ b/dcmimage/apps/dcmscale.cc
+@@ -31,7 +31,7 @@
+ 
+ #include "dcmtk/oflog/oflog.h"           /* for OFLogger */
+ 
+-#include "dcmtk/dcmimgle/dcmimage.h"     /* for DicomImage */
++#include "dcmtk/dcmimgle/dcmimage.h"     /* for DCMTKDicomImage */
+ #include "dcmtk/dcmimage/diregist.h"     /* include to support color images */
+ #include "dcmtk/dcmdata/dcrledrg.h"      /* for DcmRLEDecoderRegistration */
+ 
+@@ -449,8 +449,8 @@
+     OFLOG_INFO(dcmscaleLogger, "preparing pixel data");
+ 
+     const unsigned long flags = (opt_scaleType > 0) ? CIF_MayDetachPixelData : 0;
+-    // create DicomImage object
+-    DicomImage *di = new DicomImage(dataset, opt_oxfer, flags);
++    // create DCMTKDicomImage object
++    DCMTKDicomImage *di = new DCMTKDicomImage(dataset, opt_oxfer, flags);
+     if (di == NULL)
+     {
+         OFLOG_FATAL(dcmscaleLogger, "memory exhausted");
+@@ -458,11 +458,11 @@
+     }
+     if (di->getStatus() != EIS_Normal)
+     {
+-        OFLOG_FATAL(dcmscaleLogger, DicomImage::getString(di->getStatus()));
+-        return 1;
+-    }
+-
+-    DicomImage *newimage = NULL;
++        OFLOG_FATAL(dcmscaleLogger, DCMTKDicomImage::getString(di->getStatus()));
++        return 1;
++    }
++
++    DCMTKDicomImage *newimage = NULL;
+     OFString derivationDescription;
+ 
+     if (opt_useClip)
+@@ -543,7 +543,7 @@
+     }
+     else if (newimage->getStatus() != EIS_Normal)
+     {
+-        OFLOG_FATAL(dcmscaleLogger, DicomImage::getString(newimage->getStatus()));
++        OFLOG_FATAL(dcmscaleLogger, DCMTKDicomImage::getString(newimage->getStatus()));
+         return 1;
+     }
+     /* write scaled image to dataset (update attributes of Image Pixel Module) */
+--- a/dcmimage/include/dcmtk/dcmimage/dcmicmph.h
++++ b/dcmimage/include/dcmtk/dcmimage/dcmicmph.h
+@@ -32,7 +32,7 @@
+ 
+ #include <cmath>
+ 
+-class DicomImage;
++class DCMTKDicomImage;
+ class DcmFileFormat;
+ class DcmItem;
+ 
+@@ -67,7 +67,7 @@
+    *  @param ifname filename for DcmFileFormat::loadFile()
+    *  @param xfer DICOM transfer syntax for DcmFileFormat::loadFile()
+    *  @param readMode file read mode for DcmFileFormat::loadFile()
+-   *  @param compatibilityMode compatibility mode for DicomImage constructor
++   *  @param compatibilityMode compatibility mode for DCMTKDicomImage constructor
+    *  @return EC_Normal if successful, and error code otherwise
+    */
+   OFCondition readReferenceImage(
+@@ -80,7 +80,7 @@
+    *  @param ifname filename for DcmFileFormat::loadFile()
+    *  @param xfer DICOM transfer syntax for DcmFileFormat::loadFile()
+    *  @param readMode file read mode for DcmFileFormat::loadFile()
+-   *  @param compatibilityMode compatibility mode for DicomImage constructor
++   *  @param compatibilityMode compatibility mode for DCMTKDicomImage constructor
+    *  @return EC_Normal if successful, and error code otherwise
+    */
+   OFCondition readTestImage(
+@@ -158,12 +158,12 @@
+    *  @param ifname filename for DcmFileFormat::loadFile()
+    *  @param xfer DICOM transfer syntax for DcmFileFormat::loadFile()
+    *  @param readMode file read mode for DcmFileFormat::loadFile()
+-   *  @param compatibilityMode compatibility mode for DicomImage constructor
++   *  @param compatibilityMode compatibility mode for DCMTKDicomImage constructor
+    *  @param diffImage pointer to DICOM dataset for difference image, may be NULL
+    *  @return EC_Normal if successful, and error code otherwise
+    */
+   static OFCondition readDICOMImage(
+-    DicomImage *& di,
++    DCMTKDicomImage *& di,
+     OFBool isReference,
+     const char *ifname,
+     E_TransferSyntax xfer,
+@@ -183,7 +183,7 @@
+    *  @return EC_Normal if successful, and error code otherwise
+    */
+   static OFCondition configureImage(
+-    DicomImage *di,
++    DCMTKDicomImage *di,
+     EW_WindowType windowType,
+     OFCmdUnsignedInt windowParameter,
+     OFCmdFloat& windowCenter,
+@@ -212,7 +212,7 @@
+    *  @param di DICOM image
+    *  @param filename filename from which the image was loaded
+    */
+-  static void logImageInfo(DicomImage *di, const char *filename);
++  static void logImageInfo(DCMTKDicomImage *di, const char *filename);
+ 
+   /** create content for frame label vector
+    *  @param s string to which the frame label vector is written
+@@ -252,10 +252,10 @@
+   OFCondition computeColorImageComparionMetrics();
+ 
+   /// pointer to reference image
+-  DicomImage *di_reference;
++  DCMTKDicomImage *di_reference;
+ 
+   /// pointer to test image
+-  DicomImage *di_test;
++  DCMTKDicomImage *di_test;
+ 
+   /// difference image in DICOM format
+   DcmFileFormat *diff_image;
+--- a/dcmimage/include/dcmtk/dcmimage/dicoimg.h
++++ b/dcmimage/include/dcmtk/dcmimage/dicoimg.h
+@@ -136,7 +136,7 @@
+      ** @param  fstart  first frame to be processed
+      *  @param  fcount  number of frames
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
+      */
+     DiImage *createImage(const unsigned long fstart,
+                          const unsigned long fcount) const;
+--- a/dcmimage/include/dcmtk/dcmimage/diqtcmap.h
++++ b/dcmimage/include/dcmtk/dcmimage/diqtcmap.h
+@@ -31,7 +31,7 @@
+ #include "dcmtk/dcmimage/diqthash.h"  /* gcc 3.4 needs this */
+ #include "dcmtk/dcmimage/diqtctab.h"  /* gcc 3.4 needs this */
+ 
+-class DicomImage;
++class DCMTKDicomImage;
+ class DcmQuantColorHashTable;
+ class DcmQuantColorTable;
+ class DcmQuantPixel;
+@@ -67,7 +67,7 @@
+    *    times sourceImage.getHeight() values of type T2.
+    */
+   static void create(
+-    DicomImage& sourceImage,
++    DCMTKDicomImage& sourceImage,
+     unsigned long frameNumber,
+     unsigned long maxval,
+     DcmQuantColorHashTable& cht,
+--- a/dcmimage/include/dcmtk/dcmimage/diqtctab.h
++++ b/dcmimage/include/dcmtk/dcmimage/diqtctab.h
+@@ -31,7 +31,7 @@
+ #include "dcmtk/ofstd/ofstring.h"     /* for class OFString */
+ 
+ 
+-class DicomImage;
++class DCMTKDicomImage;
+ class DcmItem;
+ 
+ 
+@@ -74,7 +74,7 @@
+    *    this maximum.
+    *  @return EC_Normal if successful, an error code otherwise.
+    */
+-  OFCondition computeHistogram(DicomImage& image, unsigned long maxcolors);
++  OFCondition computeHistogram(DCMTKDicomImage& image, unsigned long maxcolors);
+ 
+   /** after a call to computeHistogram(), this method
+    *  returns the maximum pixel value to which all color samples
+--- a/dcmimage/include/dcmtk/dcmimage/diqthash.h
++++ b/dcmimage/include/dcmtk/dcmimage/diqthash.h
+@@ -30,7 +30,7 @@
+ #include "dcmtk/dcmimage/diqthitl.h"  /* for DcmQuantHistogramItemList */
+ 
+ 
+-class DicomImage;
++class DCMTKDicomImage;
+ 
+ /** this class implements a hash table for colors.
+  *  Each entry of the hash table consists of an RGB
+@@ -81,7 +81,7 @@
+    *  @return number of colors found, 0 if too many colors.
+    */
+   unsigned long addToHashTable(
+-    DicomImage& image,
++    DCMTKDicomImage& image,
+     unsigned long newmaxval,
+     unsigned long maxcolors);
+ 
+--- a/dcmimage/include/dcmtk/dcmimage/diquant.h
++++ b/dcmimage/include/dcmtk/dcmimage/diquant.h
+@@ -30,7 +30,7 @@
+ #include "dcmtk/ofstd/ofstring.h"     /* for class OFString */
+ 
+ 
+-class DicomImage;
++class DCMTKDicomImage;
+ class DcmItem;
+ class DcmTagKey;
+ 
+@@ -61,7 +61,7 @@
+    *  @return EC_Normal if successful, an error code otherwise.
+    */
+   static OFCondition createPaletteColorImage(
+-    DicomImage& sourceImage,
++    DCMTKDicomImage& sourceImage,
+     DcmItem& target,
+     OFBool writeAsOW,
+     OFBool write16BitEntries,
+--- a/dcmimage/libsrc/dcmicmph.cc
++++ b/dcmimage/libsrc/dcmicmph.cc
+@@ -30,7 +30,7 @@
+ #include "dcmtk/dcmdata/dctk.h"          /* for various dcmdata headers */
+ #include "dcmtk/dcmdata/cmdlnarg.h"      /* for prepareCmdLineArgs */
+ #include "dcmtk/dcmdata/dcuid.h"         /* for dcmtk version name */
+-#include "dcmtk/dcmimgle/dcmimage.h"     /* for DicomImage */
++#include "dcmtk/dcmimgle/dcmimage.h"     /* for DCMTKDicomImage */
+ #include "dcmtk/dcmimage/dilogger.h"     /* for the logger macros */
+ #include "dcmtk/dcmimage/diregist.h"     /* include to support color images */
+ 
+@@ -85,7 +85,7 @@
+ 
+ 
+ OFCondition DicomImageComparison::readDICOMImage(
+-    DicomImage *& di,
++    DCMTKDicomImage *& di,
+     OFBool isReference,
+     const char *ifname,
+     E_TransferSyntax xfer,
+@@ -115,8 +115,8 @@
+         // determine transfer syntax
+         E_TransferSyntax original_xfer = dfile->getDataset()->getOriginalXfer();
+ 
+-        // The DicomImage instance takes ownership of the DcmFileFormat instance. Do not delete manually.
+-        di = new DicomImage(dfile, original_xfer, compatibilityMode);
++        // The DCMTKDicomImage instance takes ownership of the DcmFileFormat instance. Do not delete manually.
++        di = new DCMTKDicomImage(dfile, original_xfer, compatibilityMode);
+ 
+         // check status of the DICOM image object
+         if (di->getStatus() == EIS_Normal)
+@@ -130,8 +130,8 @@
+                     else cond = copyTestImageAttributes(dfile->getDataset(), diffImage);
+             }
+         } else {
+-            // Creation of DicomImage object failed. Bail out.
+-            const char *msg = DicomImage::getString(di->getStatus());
++            // Creation of DCMTKDicomImage object failed. Bail out.
++            const char *msg = DCMTKDicomImage::getString(di->getStatus());
+             DCMIMAGE_ERROR(msg);
+             cond = makeOFCondition(OFM_dcmimage, 129, OF_error, msg);
+             delete di;
+@@ -171,7 +171,7 @@
+ 
+ 
+ OFCondition DicomImageComparison::configureImage(
+-    DicomImage *di,
++    DCMTKDicomImage *di,
+     EW_WindowType windowType,
+     OFCmdUnsignedInt windowParameter,
+     OFCmdFloat& windowCenter,
+@@ -963,7 +963,7 @@
+ }
+ 
+ 
+-void DicomImageComparison::logImageInfo(DicomImage *di, const char *filename)
++void DicomImageComparison::logImageInfo(DCMTKDicomImage *di, const char *filename)
+ {
+     if (di == NULL) return;
+     if (filename == NULL) return;
+--- a/dcmimage/libsrc/diqtctab.cc
++++ b/dcmimage/libsrc/diqtctab.cc
+@@ -90,7 +90,7 @@
+ 
+ 
+ OFCondition DcmQuantColorTable::computeHistogram(
+-  DicomImage& image,
++  DCMTKDicomImage& image,
+   unsigned long maxcolors)
+ {
+   // reset object to initial state
+--- a/dcmimage/libsrc/diqthash.cc
++++ b/dcmimage/libsrc/diqthash.cc
+@@ -23,7 +23,7 @@
+ #include "dcmtk/config/osconfig.h"
+ #include "dcmtk/dcmimage/diqthash.h"
+ #include "dcmtk/dcmdata/dcxfer.h"      /* for E_TransferSyntax */
+-#include "dcmtk/dcmimgle/dcmimage.h"    /* for DicomImage */
++#include "dcmtk/dcmimgle/dcmimage.h"    /* for DCMTKDicomImage */
+ 
+ 
+ DcmQuantColorHashTable::DcmQuantColorHashTable()
+@@ -63,7 +63,7 @@
+ 
+ 
+ unsigned long DcmQuantColorHashTable::addToHashTable(
+-  DicomImage& image,
++  DCMTKDicomImage& image,
+   unsigned long newmaxval,
+   unsigned long maxcolors)
+ {
+--- a/dcmimage/libsrc/diquant.cc
++++ b/dcmimage/libsrc/diquant.cc
+@@ -32,7 +32,7 @@
+ #include "dcmtk/dcmimage/dilogger.h"  /* for logging macros */
+ #include "dcmtk/dcmdata/dcswap.h"     /* for swapIfNecessary() */
+ #include "dcmtk/dcmdata/dcitem.h"     /* for DcmItem */
+-#include "dcmtk/dcmimgle/dcmimage.h"  /* for DicomImage */
++#include "dcmtk/dcmimgle/dcmimage.h"  /* for DCMTKDicomImage */
+ #include "dcmtk/dcmdata/dcdeftag.h"   /* for tag constants */
+ #include "dcmtk/dcmdata/dcpixel.h"    /* for DcmPixelData */
+ #include "dcmtk/dcmdata/dcsequen.h"   /* for DcmSequenceOfItems */
+@@ -41,7 +41,7 @@
+ 
+ 
+ OFCondition DcmQuant::createPaletteColorImage(
+-    DicomImage& sourceImage,
++    DCMTKDicomImage& sourceImage,
+     DcmItem& target,
+     OFBool writeAsOW,
+     OFBool write16BitEntries,
+--- a/dcmimgle/include/dcmtk/dcmimgle/dcmimage.h
++++ b/dcmimgle/include/dcmtk/dcmimgle/dcmimage.h
+@@ -52,7 +52,7 @@
+ /** Interface class for dcmimgle/dcmimage module.
+  *  The main purpose of these modules is image display.
+  */
+-class DCMTK_DCMIMGLE_EXPORT DicomImage
++class DCMTK_DCMIMGLE_EXPORT DCMTKDicomImage
+ {
+ 
+  public:
+@@ -69,7 +69,7 @@
+      *                    of parameters labeled 'frame' in this class refers to this start frame.
+      *  @param  fcount    number of frames (optional, 0 = all frames)
+      */
+-    DicomImage(const OFFilename &filename,
++    DCMTKDicomImage(const OFFilename &filename,
+                const unsigned long flags = 0,
+                const unsigned long fstart = 0,
+                const unsigned long fcount = 0);
+@@ -88,7 +88,7 @@
+      *                  of parameters labeled 'frame' in this class refers to this start frame.
+      *  @param  fcount  number of frames (optional, 0 = all frames)
+      */
+-    DicomImage(DcmObject *object,
++    DCMTKDicomImage(DcmObject *object,
+                const E_TransferSyntax xfer,
+                const unsigned long flags = 0,
+                const unsigned long fstart = 0,
+@@ -111,7 +111,7 @@
+      *                     of parameters labeled 'frame' in this class refers to this start frame.
+      *  @param  fcount     number of frames (optional, 0 = all frames)
+      */
+-    DicomImage(DcmObject *object,
++    DCMTKDicomImage(DcmObject *object,
+                const E_TransferSyntax xfer,
+                const double slope,
+                const double intercept,
+@@ -137,7 +137,7 @@
+      *                       of parameters labeled 'frame' in this class refers to this start frame.
+      *  @param  fcount       number of frames (optional, 0 = all frames)
+      */
+-    DicomImage(DcmObject *object,
++    DCMTKDicomImage(DcmObject *object,
+                E_TransferSyntax xfer,
+                const DcmUnsignedShort &data,
+                const DcmUnsignedShort &descriptor,
+@@ -149,7 +149,7 @@
+ 
+     /** destructor
+      */
+-    virtual ~DicomImage();
++    virtual ~DCMTKDicomImage();
+ 
+ 
+  // --- multi-frame handling
+@@ -1355,7 +1355,7 @@
+     }
+ 
+ 
+- // --- create...Image: return pointer to new 'DicomImage' object, memory isn't handled internally !
++ // --- create...Image: return pointer to new 'DCMTKDicomImage' object, memory isn't handled internally !
+ 
+     /** create copy of current image object.
+      *  memory is not handled internally - must be deleted from calling program.
+@@ -1363,9 +1363,9 @@
+      ** @param  fstart  first frame to be processed (0 = 1st frame)
+      *  @param  fcount  number of frames (0 = all frames)
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
+-     */
+-    DicomImage *createDicomImage(unsigned long fstart = 0,
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
++     */
++    DCMTKDicomImage *createDicomImage(unsigned long fstart = 0,
+                                  unsigned long fcount = 0) const;
+ 
+     /** create scaled copy of current image object (given by exact size).
+@@ -1381,9 +1381,9 @@
+      *                       (if true, width OR height should be 0, i.e. this component will be calculated
+      *                        automatically)
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
+-     */
+-    DicomImage *createScaledImage(const unsigned long width,
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
++     */
++    DCMTKDicomImage *createScaledImage(const unsigned long width,
+                                   const unsigned long height = 0,
+                                   const int interpolate = 0,
+                                   int aspect = 0) const;
+@@ -1401,9 +1401,9 @@
+      *                       (if true, width OR height should be 0, i.e. this component will be calculated
+      *                        automatically)
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
+-     */
+-    DicomImage *createScaledImage(const double xfactor,
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
++     */
++    DCMTKDicomImage *createScaledImage(const double xfactor,
+                                   const double yfactor = 0,
+                                   const int interpolate = 0,
+                                   const int aspect = 0) const;
+@@ -1428,9 +1428,9 @@
+      *                         automatically)
+      *  @param  pvalue        P-value used for the border outside the image (0..65535)
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
+-     */
+-    DicomImage *createScaledImage(const signed long left_pos,
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
++     */
++    DCMTKDicomImage *createScaledImage(const signed long left_pos,
+                                   const signed long top_pos,
+                                   unsigned long clip_width,
+                                   unsigned long clip_height,
+@@ -1460,9 +1460,9 @@
+      *                        automatically)
+      *  @param  pvalue       P-value used for the border outside the image (0..65535)
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
+-     */
+-    DicomImage *createScaledImage(const signed long left_pos,
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
++     */
++    DCMTKDicomImage *createScaledImage(const signed long left_pos,
+                                   const signed long top_pos,
+                                   unsigned long width,
+                                   unsigned long height,
+@@ -1482,9 +1482,9 @@
+      *  @param  height    height of area to be copied/clipped
+      *  @param  pvalue    P-value used for the border outside the image (0..65535)
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
+-     */
+-    DicomImage *createClippedImage(const signed long left_pos,
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
++     */
++    DCMTKDicomImage *createClippedImage(const signed long left_pos,
+                                    const signed long top_pos,
+                                    unsigned long width = 0,
+                                    unsigned long height = 0,
+@@ -1508,9 +1508,9 @@
+      ** @param  horz  flip horizontally if true
+      *  @param  vert  flip vertically if true
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
+-     */
+-    DicomImage *createFlippedImage(int horz = 1,
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
++     */
++    DCMTKDicomImage *createFlippedImage(int horz = 1,
+                                    int vert = 0) const;
+ 
+     /** rotate current image (by steps of 90 degrees)
+@@ -1528,9 +1528,9 @@
+      *
+      ** @param  degree  angle by which the image shall be rotated (-360, -270, -180, -90, 0, 90, 180, 270, 360)
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
+-     */
+-    DicomImage *createRotatedImage(signed int degree) const;
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
++     */
++    DCMTKDicomImage *createRotatedImage(signed int degree) const;
+ 
+     /** create monochrome copy of the current image.
+      *  equal to createDicomImage() for monochrome images.
+@@ -1541,9 +1541,9 @@
+      *  @param  green  coefficient by which the green component is weighted (default: NTSC value)
+      *  @param  blue   coefficient by which the blue component is weighted (default: NTSC value)
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
+-     */
+-    DicomImage *createMonochromeImage(const double red = 0.299,
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
++     */
++    DCMTKDicomImage *createMonochromeImage(const double red = 0.299,
+                                       const double green = 0.587,
+                                       const double blue = 0.114) const;
+ 
+@@ -1618,16 +1618,16 @@
+         return DiMonoImage::createPackedBitmap(buffer, size, count, 16, 12);
+     }
+ 
+-    /** create new single frame DicomImage with applied grayscale transformations.
++    /** create new single frame DCMTKDicomImage with applied grayscale transformations.
+      *  The method getOutputData() is used internally for the new bitmap.
+      *  Limited to monochrome images.
+      *
+      ** @param  frame  index of frame to be converted
+      *  @param  bits   number of bits per pixel used for the output bitmap
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
+-     */
+-    DicomImage *createMonoOutputImage(const unsigned long frame,
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
++     */
++    DCMTKDicomImage *createMonoOutputImage(const unsigned long frame,
+                                       const int bits);
+ 
+  // --- output image file: return true ('1') if successful
+@@ -1856,7 +1856,7 @@
+      *  @param  image      new image data
+      *  @param  interpret  new photometric interpretation
+      */
+-    DicomImage(const DicomImage *dicom,
++    DCMTKDicomImage(const DCMTKDicomImage *dicom,
+                DiImage *image,
+                const EP_Interpretation interpret = EPI_Unknown);
+ 
+@@ -1902,8 +1902,8 @@
+ 
+  // --- declarations to avoid compiler warnings
+ 
+-    DicomImage(const DicomImage &);
+-    DicomImage &operator=(const DicomImage &);
++    DCMTKDicomImage(const DCMTKDicomImage &);
++    DCMTKDicomImage &operator=(const DCMTKDicomImage &);
+ };
+ 
+ 
+--- a/dcmimgle/include/dcmtk/dcmimgle/diimage.h
++++ b/dcmimgle/include/dcmtk/dcmimgle/diimage.h
+@@ -15,7 +15,7 @@
+  *
+  *  Author:  Joerg Riesmeier
+  *
+- *  Purpose: DicomImage (Header)
++ *  Purpose: DCMTKDicomImage (Header)
+  *
+  */
+ 
+@@ -60,7 +60,7 @@
+ 
+ /** Base class for images.
+  *  NB: This is an internal class of module dcmimgle/dcmimage.  Please do not
+- *      use it directly.  Instead use the main interface class DicomImage.
++ *      use it directly.  Instead use the main interface class DCMTKDicomImage.
+  */
+ class DCMTK_DCMIMGLE_EXPORT DiImage
+ {
+@@ -607,7 +607,7 @@
+      */
+     int detachPixelData();
+ 
+-    /// copy of status variable declared in class 'DicomImage'
++    /// copy of status variable declared in class 'DCMTKDicomImage'
+     EI_Status ImageStatus;
+     /// points to special object, which encapsulates the dcmdata module
+     const DiDocument *Document;
+--- a/dcmimgle/include/dcmtk/dcmimgle/dimo1img.h
++++ b/dcmimgle/include/dcmtk/dcmimgle/dimo1img.h
+@@ -95,7 +95,7 @@
+      ** @param  fstart  first frame to be processed
+      *  @param  fcount  number of frames
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
+      */
+     DiImage *createImage(const unsigned long fstart,
+                          const unsigned long fcount) const;
+--- a/dcmimgle/include/dcmtk/dcmimgle/dimo2img.h
++++ b/dcmimgle/include/dcmtk/dcmimgle/dimo2img.h
+@@ -147,7 +147,7 @@
+      ** @param  fstart  first frame to be processed
+      *  @param  fcount  number of frames
+      *
+-     ** @return pointer to new DicomImage object (NULL if an error occurred)
++     ** @return pointer to new DCMTKDicomImage object (NULL if an error occurred)
+      */
+     DiImage *createImage(const unsigned long fstart,
+                          const unsigned long fcount) const;
+--- a/dcmimgle/include/dcmtk/dcmimgle/diovpln.h
++++ b/dcmimgle/include/dcmtk/dcmimgle/diovpln.h
+@@ -435,7 +435,7 @@
+     Uint32 NumberOfFrames;
+     /// number of starting frame
+     Uint16 ImageFrameOrigin;
+-    /// first frame to be processed (from DicomImage constructor)
++    /// first frame to be processed (from DCMTKDicomImage constructor)
+     Uint32 FirstFrame;
+ 
+     /// y-coordinate of overlay plane's origin
+--- a/dcmimgle/include/dcmtk/dcmimgle/diutils.h
++++ b/dcmimgle/include/dcmtk/dcmimgle/diutils.h
+@@ -63,7 +63,7 @@
+ /// accept wrong palette attribute tags
+ const unsigned long CIF_WrongPaletteAttributeTags    = 0x0000002;
+ 
+-/// element pixel data may be detached if it is no longer needed by DicomImage
++/// element pixel data may be detached if it is no longer needed by DCMTKDicomImage
+ const unsigned long CIF_MayDetachPixelData           = 0x0000004;
+ 
+ /// use presentation state instead of 'built-in' LUTs & overlays
+--- a/dcmimgle/libsrc/dcmimage.cc
++++ b/dcmimgle/libsrc/dcmimage.cc
+@@ -15,7 +15,7 @@
+  *
+  *  Author:  Joerg Riesmeier
+  *
+- *  Purpose: DicomImage-Interface (Source)
++ *  Purpose: DCMTKDicomImage-Interface (Source)
+  *
+  */
+ 
+@@ -53,9 +53,9 @@
+  *  constructors  *
+  *----------------*/
+ 
+-// --- create 'DicomImage' from 'filename', for valid 'flags' see 'diutils.h'
+-
+-DicomImage::DicomImage(const OFFilename &filename,
++// --- create 'DCMTKDicomImage' from 'filename', for valid 'flags' see 'diutils.h'
++
++DCMTKDicomImage::DCMTKDicomImage(const OFFilename &filename,
+                        const unsigned long flags,
+                        const unsigned long fstart,
+                        const unsigned long fcount)
+@@ -72,9 +72,9 @@
+ }
+ 
+ 
+-// --- create 'DicomImage' from valid 'DicomObject' with transfer syntax 'xfer'
+-
+-DicomImage::DicomImage(DcmObject *object,
++// --- create 'DCMTKDicomImage' from valid 'DicomObject' with transfer syntax 'xfer'
++
++DCMTKDicomImage::DCMTKDicomImage(DcmObject *object,
+                        const E_TransferSyntax xfer,
+                        const unsigned long flags,
+                        const unsigned long fstart,
+@@ -92,9 +92,9 @@
+ }
+ 
+ 
+-// --- create 'DicomImage' from valid 'DicomObject' with given rescale 'slope' and 'intercept'
+-
+-DicomImage::DicomImage(DcmObject *object,
++// --- create 'DCMTKDicomImage' from valid 'DicomObject' with given rescale 'slope' and 'intercept'
++
++DCMTKDicomImage::DCMTKDicomImage(DcmObject *object,
+                        const E_TransferSyntax xfer,
+                        const double slope,
+                        const double intercept,
+@@ -118,9 +118,9 @@
+ }
+ 
+ 
+-// --- create 'DicomImage' from valid 'DicomObject' with given modality LUT (specified by 'data' and 'descriptor')
+-
+-DicomImage::DicomImage(DcmObject *object,
++// --- create 'DCMTKDicomImage' from valid 'DicomObject' with given modality LUT (specified by 'data' and 'descriptor')
++
++DCMTKDicomImage::DCMTKDicomImage(DcmObject *object,
+                        E_TransferSyntax xfer,
+                        const DcmUnsignedShort &data,
+                        const DcmUnsignedShort &descriptor,
+@@ -145,9 +145,9 @@
+ }
+ 
+ 
+-// --- protected: create 'DicomImage' from source with different image data and photometric interpretation
+-
+-DicomImage::DicomImage(const DicomImage *dicom,
++// --- protected: create 'DCMTKDicomImage' from source with different image data and photometric interpretation
++
++DCMTKDicomImage::DCMTKDicomImage(const DCMTKDicomImage *dicom,
+                        DiImage *image,
+                        const EP_Interpretation interpret)
+   : ImageStatus(dicom->ImageStatus),
+@@ -166,7 +166,7 @@
+  *  destructor  *
+  *--------------*/
+ 
+-DicomImage::~DicomImage()
++DCMTKDicomImage::~DCMTKDicomImage()
+ {
+     delete Image;
+     if (Document != NULL)
+@@ -176,9 +176,9 @@
+ 
+ /*********************************************************************/
+ 
+-// --- initialize 'DicomImage' object (same procedure for every 'real' constructor)
+-
+-void DicomImage::Init()
++// --- initialize 'DCMTKDicomImage' object (same procedure for every 'real' constructor)
++
++void DCMTKDicomImage::Init()
+ {
+     if ((Document != NULL) && (Document->good()))
+     {
+@@ -265,7 +265,7 @@
+ 
+ // --- check whether the loadable 'DataDictionary' is present/loaded
+ 
+-int DicomImage::checkDataDictionary()
++int DCMTKDicomImage::checkDataDictionary()
+ {
+     if (!dcmDataDict.isDictionaryLoaded())
+     {
+@@ -279,7 +279,7 @@
+ /*********************************************************************/
+ 
+ 
+-const char *DicomImage::getString(const EI_Status status)
++const char *DCMTKDicomImage::getString(const EI_Status status)
+ {
+     switch (status)
+     {
+@@ -306,7 +306,7 @@
+ }
+ 
+ 
+-const char *DicomImage::getString(const EP_Interpretation interpret)
++const char *DCMTKDicomImage::getString(const EP_Interpretation interpret)
+ {
+     const SP_Interpretation *pin = PhotometricInterpretationNames;
+     while ((pin->DefinedTerm != NULL) && (pin->Type != interpret))
+@@ -317,7 +317,7 @@
+ 
+ // --- return unique 'SOPclassUID' string
+ 
+-const char *DicomImage::getSOPclassUID() const
++const char *DCMTKDicomImage::getSOPclassUID() const
+ {
+     if (Document != NULL)
+     {
+@@ -331,16 +331,16 @@
+ 
+ // --- return 'true' (1) if 'Document' has the same 'SOPclassUID' as given in parameter 'uid'
+ 
+-int DicomImage::hasSOPclassUID(const char *uid) const
++int DCMTKDicomImage::hasSOPclassUID(const char *uid) const
+ {
+     const char *str = getSOPclassUID();
+     return (str != NULL) && (strcmp(str, uid) == 0);
+ }
+ 
+ 
+-// --- create new 'DicomImage' with 'fcount' frames starting with frame 'fstart'
+-
+-DicomImage *DicomImage::createDicomImage(unsigned long fstart,
++// --- create new 'DCMTKDicomImage' with 'fcount' frames starting with frame 'fstart'
++
++DCMTKDicomImage *DCMTKDicomImage::createDicomImage(unsigned long fstart,
+                                          unsigned long fcount) const
+ {
+     if ((Image != NULL) && (fstart < getFrameCount()))
+@@ -350,7 +350,7 @@
+         DiImage *image = Image->createImage(fstart, fcount);
+         if (image != NULL)
+         {
+-            DicomImage *dicom = new DicomImage(this, image);
++            DCMTKDicomImage *dicom = new DCMTKDicomImage(this, image);
+             return dicom;
+         }
+     }
+@@ -361,7 +361,7 @@
+ // --- create scaled to given size ('width' and 'height') image, memory isn't handled internally !
+ // --- if one dimension is '0' the other is automatically adjusted (with respect to pixel aspect ratio)
+ 
+-DicomImage *DicomImage::createScaledImage(const unsigned long width,
++DCMTKDicomImage *DCMTKDicomImage::createScaledImage(const unsigned long width,
+                                           const unsigned long height,
+                                           const int interpolate,
+                                           int aspect) const
+@@ -372,7 +372,7 @@
+ 
+ // --- create scaled with given factors ('xfactor' and 'yfactor') image, memory isn't handled internally !
+ 
+-DicomImage *DicomImage::createScaledImage(const double xfactor,
++DCMTKDicomImage *DCMTKDicomImage::createScaledImage(const double xfactor,
+                                           const double yfactor,
+                                           const int interpolate,
+                                           const int aspect) const
+@@ -384,7 +384,7 @@
+ 
+ // --- clip & scale
+ 
+-DicomImage *DicomImage::createScaledImage(const signed long left_pos,
++DCMTKDicomImage *DCMTKDicomImage::createScaledImage(const signed long left_pos,
+                                           const signed long top_pos,
+                                           unsigned long clip_width,
+                                           unsigned long clip_height,
+@@ -446,7 +446,7 @@
+                 interpolate, aspect, pvalue);
+             if (image != NULL)
+             {
+-                DicomImage *dicom = new DicomImage(this, image);
++                DCMTKDicomImage *dicom = new DCMTKDicomImage(this, image);
+                 return dicom;
+             }
+         }
+@@ -457,7 +457,7 @@
+ 
+ // --- clip & scale
+ 
+-DicomImage *DicomImage::createScaledImage(const signed long left_pos,
++DCMTKDicomImage *DCMTKDicomImage::createScaledImage(const signed long left_pos,
+                                           const signed long top_pos,
+                                           unsigned long width,
+                                           unsigned long height,
+@@ -485,7 +485,7 @@
+ // --- create clipped to given box ('left_pos', 'top_pos' and 'width', 'height') image,
+ // ---- memory isn't handled internally! 'width' and 'height' are optional
+ 
+-DicomImage *DicomImage::createClippedImage(const signed long left_pos,
++DCMTKDicomImage *DCMTKDicomImage::createClippedImage(const signed long left_pos,
+                                            const signed long top_pos,
+                                            unsigned long width,
+                                            unsigned long height,
+@@ -498,7 +498,7 @@
+ 
+ // --- flip image (horizontal: x > 1 and/or vertical y > 1)
+ 
+-int DicomImage::flipImage(int horz,
++int DCMTKDicomImage::flipImage(int horz,
+                           int vert) const
+ {
+     if ((Image != NULL) && (horz || vert))
+@@ -518,7 +518,7 @@
+ 
+ // --- create flipped image (horizontal: x > 1 and/or vertical y > 1), memory isn't handled internally !
+ 
+-DicomImage *DicomImage::createFlippedImage(int horz,
++DCMTKDicomImage *DCMTKDicomImage::createFlippedImage(int horz,
+                                            int vert) const
+ {
+     if ((Image != NULL) && (horz || vert))
+@@ -534,7 +534,7 @@
+             image = Image->createImage(0, getFrameCount());
+         if (image != NULL)
+         {
+-            DicomImage *dicom = new DicomImage(this, image);
++            DCMTKDicomImage *dicom = new DCMTKDicomImage(this, image);
+             return dicom;
+         }
+     }
+@@ -544,7 +544,7 @@
+ 
+ // -- normalize given 'degree' value to 0, 90, 180, 270
+ 
+-int DicomImage::normalizeDegreeValue(signed int &degree) const
++int DCMTKDicomImage::normalizeDegreeValue(signed int &degree) const
+ {
+     switch (degree)
+     {
+@@ -573,7 +573,7 @@
+ 
+ // --- rotate image by given 'degree'
+ 
+-int DicomImage::rotateImage(signed int degree) const
++int DCMTKDicomImage::rotateImage(signed int degree) const
+ {
+     if ((Image != NULL) && normalizeDegreeValue(degree))
+     {
+@@ -588,14 +588,14 @@
+ 
+ // --- create by given 'degree' rotated image, memory isn't handled internally !
+ 
+-DicomImage *DicomImage::createRotatedImage(signed int degree) const
++DCMTKDicomImage *DCMTKDicomImage::createRotatedImage(signed int degree) const
+ {
+     if ((Image != NULL) && normalizeDegreeValue(degree))
+     {
+         DiImage *image = Image->createRotate(OFstatic_cast(int, degree));
+         if (image != NULL)
+         {
+-            DicomImage *dicom = new DicomImage(this, image);
++            DCMTKDicomImage *dicom = new DCMTKDicomImage(this, image);
+             return dicom;
+         }
+     }
+@@ -605,7 +605,7 @@
+ 
+ // --- create color-image to mono-image with given 'red', 'green' and 'blue' coefficients converted image, memory ... !
+ 
+-DicomImage *DicomImage::createMonochromeImage(const double red,
++DCMTKDicomImage *DCMTKDicomImage::createMonochromeImage(const double red,
+                                               const double green,
+                                               const double blue) const
+ {
+@@ -614,7 +614,7 @@
+         DiImage *image = Image->createMono(red, green, blue);       // create monochrome image data
+         if (image != NULL)
+         {
+-            DicomImage *dicom = new DicomImage(this, image, EPI_Monochrome2);
++            DCMTKDicomImage *dicom = new DCMTKDicomImage(this, image, EPI_Monochrome2);
+             return dicom;
+         }
+     }
+@@ -624,7 +624,7 @@
+ 
+ // --- create monochrome output image of specified frame (incl. windowing)
+ 
+-DicomImage *DicomImage::createMonoOutputImage(const unsigned long frame,
++DCMTKDicomImage *DCMTKDicomImage::createMonoOutputImage(const unsigned long frame,
+                                               const int bits)
+ {
+     if ((Image != NULL) && (Image->getMonoImagePtr() != NULL))
+@@ -632,7 +632,7 @@
+         DiImage *image = Image->getMonoImagePtr()->createOutputImage(frame, bits);
+         if (image != NULL)
+         {
+-            DicomImage *dicom = new DicomImage(this, image, EPI_Monochrome2);
++            DCMTKDicomImage *dicom = new DCMTKDicomImage(this, image, EPI_Monochrome2);
+             return dicom;
+         }
+     }
+@@ -645,7 +645,7 @@
+ 
+ // --- write 'frame' of image data to 'filename' with 'bits' depth
+ 
+-int DicomImage::writePPM(const char *filename,
++int DCMTKDicomImage::writePPM(const char *filename,
+                          const int bits,
+                          const unsigned long frame)
+ {
+@@ -665,7 +665,7 @@
+ 
+ // --- same for C++ 'ostream'
+ 
+-int DicomImage::writePPM(STD_NAMESPACE ostream& stream,
++int DCMTKDicomImage::writePPM(STD_NAMESPACE ostream& stream,
+                          const int bits,
+                          const unsigned long frame)
+ {
+@@ -677,7 +677,7 @@
+ 
+ // --- same for C 'FILE'
+ 
+-int DicomImage::writePPM(FILE *stream,
++int DCMTKDicomImage::writePPM(FILE *stream,
+                          const int bits,
+                          const unsigned long frame)
+ {
+@@ -689,7 +689,7 @@
+ 
+ // --- same for RAW PPM (binary form of PPM with a maximum of 8 bits depth)
+ 
+-int DicomImage::writeRawPPM(const char *filename,
++int DCMTKDicomImage::writeRawPPM(const char *filename,
+                             const int bits,
+                             const unsigned long frame)
+ {
+@@ -711,7 +711,7 @@
+ 
+ // --- same for C 'FILE'
+ 
+-int DicomImage::writeRawPPM(FILE *stream,
++int DCMTKDicomImage::writeRawPPM(FILE *stream,
+                             const int bits,
+                             const unsigned long frame)
+ {
+@@ -723,7 +723,7 @@
+ 
+ // --- write 'frame' of image data to 'filename' with 'bits' depth in BMP format
+ 
+-int DicomImage::writeBMP(const char *filename,
++int DCMTKDicomImage::writeBMP(const char *filename,
+                          const int bits,
+                          const unsigned long frame)
+ {
+@@ -747,7 +747,7 @@
+ 
+ // --- same for open C 'FILE' in BMP format
+ 
+-int DicomImage::writeBMP(FILE *stream,
++int DCMTKDicomImage::writeBMP(FILE *stream,
+                          const int bits,
+                          const unsigned long frame)
+ {
+@@ -762,7 +762,7 @@
+ 
+ // --- write 'frame' of image data to 'filename' pluggable image format
+ 
+-int DicomImage::writePluginFormat(const DiPluginFormat *plugin,
++int DCMTKDicomImage::writePluginFormat(const DiPluginFormat *plugin,
+                                   const char *filename,
+                                   const unsigned long frame)
+ {
+@@ -785,7 +785,7 @@
+ 
+ // --- same for open C 'FILE' in pluggable image format
+ 
+-int DicomImage::writePluginFormat(const DiPluginFormat *plugin,
++int DCMTKDicomImage::writePluginFormat(const DiPluginFormat *plugin,
+                                   FILE *stream,
+                                   const unsigned long frame)
+ {
+--- a/dcmimgle/libsrc/diimage.cc
++++ b/dcmimgle/libsrc/diimage.cc
+@@ -15,7 +15,7 @@
+  *
+  *  Author:  Joerg Riesmeier
+  *
+- *  Purpose: DicomImage (Source)
++ *  Purpose: DCMTKDicomImage (Source)
+  *
+  */
+ 
+--- a/dcmjpeg/include/dcmtk/dcmjpeg/djcodece.h
++++ b/dcmjpeg/include/dcmtk/dcmjpeg/djcodece.h
+@@ -36,7 +36,7 @@
+ class DJDecoder;
+ class DcmItem;
+ class DcmPixelItem;
+-class DicomImage;
++class DCMTKDicomImage;
+ class DcmTagKey;
+ 
+ 
+@@ -354,10 +354,10 @@
+ 
+   /** for all overlay groups create (60xx,3000) Overlay Data.
+    *  @param dataset dataset to be modified
+-   *  @param image DicomImage object for this dataset
++   *  @param image DCMTKDicomImage object for this dataset
+    *  @return EC_Normal if successful, an error code otherwise
+    */
+-  virtual OFCondition adjustOverlays(DcmItem *dataset, DicomImage& image) const;
++  virtual OFCondition adjustOverlays(DcmItem *dataset, DCMTKDicomImage& image) const;
+ 
+   /** returns true if the transfer syntax supported by this
+    *  codec is lossless.
+--- a/dcmjpeg/libsrc/ddpiimpl.cc
++++ b/dcmjpeg/libsrc/ddpiimpl.cc
+@@ -23,7 +23,7 @@
+ #include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+ 
+ #include "dcmtk/dcmjpeg/ddpiimpl.h"
+-#include "dcmtk/dcmimgle/dcmimage.h"  /* for class DicomImage */
++#include "dcmtk/dcmimgle/dcmimage.h"  /* for class DCMTKDicomImage */
+ #include "dcmtk/dcmimgle/discalet.h"  /* for direct image scaling */
+ 
+ #include "dcmtk/ofstd/ofcast.h"
+@@ -83,14 +83,14 @@
+         if (decompressAll)
+             flags |= CIF_DecompressCompletePixelData;
+         /* open referenced image */
+-        DicomImage *image = new DicomImage(dataset, EXS_Unknown, flags, frame - 1 /*fstart*/, 1 /*fcount*/);
++        DCMTKDicomImage *image = new DCMTKDicomImage(dataset, EXS_Unknown, flags, frame - 1 /*fstart*/, 1 /*fcount*/);
+         if ((image != NULL) && (image->getStatus() == EIS_Normal))
+         {
+             /* check if image is monochrome */
+             if (!image->isMonochrome())
+             {
+                 /* ... if not create one */
+-                DicomImage *mono = image->createMonochromeImage();
++                DCMTKDicomImage *mono = image->createMonochromeImage();
+                 /* replace image by monochrome one */
+                 delete image;
+                 image = mono;
+@@ -98,7 +98,7 @@
+             if (image != NULL)
+             {
+                 /* create icon */
+-                DicomImage *scaled = image->createScaledImage(OFstatic_cast(unsigned long, width),
++                DCMTKDicomImage *scaled = image->createScaledImage(OFstatic_cast(unsigned long, width),
+                                                               OFstatic_cast(unsigned long, height), 1 /*interpolate*/);
+                 if (scaled != NULL)
+                 {
+--- a/dcmjpeg/libsrc/djcodecd.cc
++++ b/dcmjpeg/libsrc/djcodecd.cc
+@@ -36,6 +36,9 @@
+ #include "dcmtk/dcmjpeg/djcparam.h"  /* for class DJCodecParameter */
+ #include "dcmtk/dcmjpeg/djdecabs.h"  /* for class DJDecoder */
+ 
++
++// Compatibility option used by Unsething C-MOVE for legacy CT receivers.
++int gForce1024RescaleInterceptForCT = 0;
+ 
+ DJCodecDecoder::DJCodecDecoder()
+ : DcmCodec()
+@@ -301,6 +304,37 @@
+                         {
+                           imageSamplesPerPixel = 1;
+                           result = OFreinterpret_cast(DcmItem*, dataset)->putAndInsertUint16(DCM_SamplesPerPixel, imageSamplesPerPixel);
++                          if( gForce1024RescaleInterceptForCT && precision > 8)
++							{
++								if (0 == strcmp(sopClassUID, UID_CTImageStorage))
++								{
++									const char *string = NULL;
++									
++									if (((DcmItem *)dataset)->findAndGetString(DCM_RescaleIntercept, string, OFFalse).good() && string != NULL)
++									{
++										Sint16 previousRescaleIntercept = atoi( string);
++										if( previousRescaleIntercept != -1024)
++										{
++											delete ((DcmItem *)dataset)->remove(DCM_RescaleIntercept);
++											
++											int difference = previousRescaleIntercept + 1024;
++											Uint16 *imageData = imageData16;
++											long loop = imageRows * imageColumns;
++											while( loop-->0)
++											{
++												if( *imageData < -difference)
++													*imageData++ = 0;
++												else
++													*imageData++ += difference;
++											}
++											
++											char buf[64];
++											OFStandard::ftoa(buf, sizeof(buf), -1024, OFStandard::ftoa_uppercase, 0, 6);
++											if (result.good()) result = ((DcmItem *)dataset)->putAndInsertString(DCM_RescaleIntercept, buf);
++										}
++									}
++								}
++							}
+                         }
+                         break;
+                       case EPI_YBR_Full:
+--- a/dcmjpeg/libsrc/djcodece.cc
++++ b/dcmjpeg/libsrc/djcodece.cc
+@@ -45,7 +45,7 @@
+ #include "dcmtk/dcmjpeg/djencabs.h"   /* for class DJEncoder */
+ 
+ // dcmimgle includes
+-#include "dcmtk/dcmimgle/dcmimage.h"  /* for class DicomImage */
++#include "dcmtk/dcmimgle/dcmimage.h"  /* for class DCMTKDicomImage */
+ 
+ #include <cmath>
+ 
+@@ -288,7 +288,7 @@
+ 
+   // initialize settings with defaults for RGB mode
+   OFBool monochromeMode = OFFalse;
+-  unsigned long flags = 0; // flags for initialization of DicomImage
++  unsigned long flags = 0; // flags for initialization of DCMTKDicomImage
+   EP_Interpretation interpr = EPI_RGB;
+   Uint16 samplesPerPixel = 3;
+   const char *photometricInterpretation = "RGB";
+@@ -316,7 +316,7 @@
+     else photometricInterpretation = "YBR_FULL";
+   }
+ 
+-  // integrate DicomImage flags transported by DJCodecParameter into "flags"-variable
++  // integrate DCMTKDicomImage flags transported by DJCodecParameter into "flags"-variable
+   if (cp->getAcceptWrongPaletteTags())
+     flags |= CIF_WrongPaletteAttributeTags;
+   if (cp->getAcrNemaCompatibility())
+@@ -324,22 +324,22 @@
+ 
+   // create dcmimage object. Will fail if dcmimage has not been activated in main().
+   // transfer syntax can be any uncompressed one.
+-  DicomImage *dimage = NULL;
++  DCMTKDicomImage *dimage = NULL;
+   if (monochromeMode)
+   {
+-    DicomImage colorimage(dataset, EXS_LittleEndianImplicit, flags); // read all frames
++    DCMTKDicomImage colorimage(dataset, EXS_LittleEndianImplicit, flags); // read all frames
+     if (colorimage.getStatus() == EIS_Normal) dimage = colorimage.createMonochromeImage();
+     if (dimage) dimage->setNoVoiTransformation();
+   }
+   else
+   {
+-    dimage = new DicomImage(dataset, EXS_LittleEndianImplicit, flags); // read all frames
++    dimage = new DCMTKDicomImage(dataset, EXS_LittleEndianImplicit, flags); // read all frames
+   }
+ 
+   if (dimage == NULL) result = EC_MemoryExhausted;
+   else if (dimage->getStatus() != EIS_Normal)
+   {
+-    DCMJPEG_WARN("Color encoder: " << DicomImage::getString(dimage->getStatus()));
++    DCMJPEG_WARN("Color encoder: " << DCMTKDicomImage::getString(dimage->getStatus()));
+     result = EC_IllegalCall;
+   }
+ 
+@@ -858,7 +858,7 @@
+ 
+ OFCondition DJCodecEncoder::adjustOverlays(
+   DcmItem *dataset,
+-  DicomImage& image) const
++  DCMTKDicomImage& image) const
+ {
+   if (dataset == NULL) return EC_IllegalCall;
+ 
+@@ -935,7 +935,7 @@
+   compressionRatio = 0.0; // initialize if something goes wrong
+   size_t compressedSize = 0;
+   double uncompressedSize = 0.0;
+-  unsigned long flags = 0; // flags for initialization of DicomImage
++  unsigned long flags = 0; // flags for initialization of DCMTKDicomImage
+ 
+   // variables needed if VOI mode is 0
+   double minRange = 0.0;
+@@ -956,7 +956,7 @@
+   OFBool mode_usePixelValues = cp->getUsePixelValues();
+   OFBool mode_useModalityRescale = cp->getUseModalityRescale();
+ 
+-  //create flags for DicomImage corresponding to DJCodecParameter options
++  //create flags for DCMTKDicomImage corresponding to DJCodecParameter options
+   if (cp->getAcceptWrongPaletteTags())
+     flags |= CIF_WrongPaletteAttributeTags;
+   if (cp->getAcrNemaCompatibility())
+@@ -980,12 +980,12 @@
+     return EJ_UnsupportedBitDepth;
+   }
+ 
+-  // create DicomImage object. Will fail if dcmimage has not been activated in main().
++  // create DCMTKDicomImage object. Will fail if dcmimage has not been activated in main().
+   // transfer syntax can be any uncompressed one.
+-  DicomImage dimage(dataset, EXS_LittleEndianImplicit, flags); // read all frames
++  DCMTKDicomImage dimage(dataset, EXS_LittleEndianImplicit, flags); // read all frames
+   if (dimage.getStatus() != EIS_Normal)
+   {
+-    DCMJPEG_WARN("Monochrome encoder: " << DicomImage::getString(dimage.getStatus()));
++    DCMJPEG_WARN("Monochrome encoder: " << DCMTKDicomImage::getString(dimage.getStatus()));
+     result = EC_IllegalCall;
+   }
+ 
+--- a/dcmjpeg/libsrc/djdijg8.cc
++++ b/dcmjpeg/libsrc/djdijg8.cc
+@@ -274,6 +274,10 @@
+ }
+ 
+ 
++// Unsething preference: retain the IJG guess when no conversion is requested.
++static int unsethingJPEGColorSpaceGuess = 0;
++void dcmtkSetJPEGColorSpace(int value) { unsethingJPEGColorSpaceGuess = value; }
++
+ OFCondition DJDecompressIJG8Bit::decode(
+   Uint8 *compressedFrameBuffer,
+   Uint32 compressedFrameBufferSize,
+@@ -392,6 +396,16 @@
+     else
+     {
+       decompressedColorModel = EPI_Unknown;
++      if (unsethingJPEGColorSpaceGuess)
++      {
++        switch (cinfo->jpeg_color_space)
++        {
++          case JCS_GRAYSCALE: decompressedColorModel = EPI_Monochrome2; break;
++          case JCS_YCbCr: decompressedColorModel = EPI_YBR_Full; break;
++          case JCS_RGB: decompressedColorModel = EPI_RGB; break;
++          default: break;
++        }
++      }
+       // prevent the library from performing any color space conversion
+       cinfo->jpeg_color_space = JCS_UNKNOWN;
+       cinfo->out_color_space = JCS_UNKNOWN;
+--- a/dcmjpls/include/dcmtk/dcmjpls/djcodece.h
++++ b/dcmjpls/include/dcmtk/dcmjpls/djcodece.h
+@@ -30,7 +30,7 @@
+ 
+ class DJLSRepresentationParameter;
+ class DJLSCodecParameter;
+-class DicomImage;
++class DCMTKDicomImage;
+ struct JlsCustomParameters;
+ 
+ /** abstract codec class for JPEG-LS encoders.
+@@ -260,12 +260,12 @@
+ 
+   /** for all overlay groups create (60xx,3000) Overlay Data.
+    *  @param dataset dataset to be modified
+-   *  @param image DicomImage object for this dataset
++   *  @param image DCMTKDicomImage object for this dataset
+    *  @return EC_Normal if successful, an error code otherwise
+    */
+   OFCondition adjustOverlays(
+     DcmItem *dataset,
+-    DicomImage& image) const;
++    DCMTKDicomImage& image) const;
+ 
+   /** create Lossy Image Compression and Lossy Image Compression Ratio.
+    *  @param dataset dataset to be modified
+@@ -320,7 +320,7 @@
+ 
+   /** perform the lossless cooked compression of a single frame
+    *  @param pixelSequence object in which the compressed frame is stored
+-   *  @param dimage DicomImage instance used to process frame
++   *  @param dimage DCMTKDicomImage instance used to process frame
+    *  @param photometricInterpretation photometric interpretation of the DICOM dataset
+    *  @param offsetList list of frame offsets updated in this parameter
+    *  @param compressedSize size of compressed frame returned in this parameter
+@@ -331,7 +331,7 @@
+    */
+   OFCondition compressCookedFrame(
+     DcmPixelSequence *pixelSequence,
+-    DicomImage *dimage,
++    DCMTKDicomImage *dimage,
+     const OFString& photometricInterpretation,
+     DcmOffsetList &offsetList,
+     unsigned long &compressedSize,
+--- a/dcmjpls/libsrc/djcodece.cc
++++ b/dcmjpls/libsrc/djcodece.cc
+@@ -49,7 +49,7 @@
+ #include "djerror.h"                 /* for private class DJLSError */
+ 
+ // dcmimgle includes
+-#include "dcmtk/dcmimgle/dcmimage.h"  /* for class DicomImage */
++#include "dcmtk/dcmimgle/dcmimage.h"  /* for class DCMTKDicomImage */
+ 
+ // JPEG-LS library (CharLS) includes
+ #include "intrface.h"
+@@ -244,7 +244,7 @@
+ 
+ OFCondition DJLSEncoderBase::adjustOverlays(
+   DcmItem *dataset,
+-  DicomImage& image) const
++  DCMTKDicomImage& image) const
+ {
+   if (dataset == NULL) return EC_IllegalCall;
+ 
+@@ -855,7 +855,7 @@
+   // differ and the decoder would error out.
+   flags |= CIF_UseAbsolutePixelRange;
+ 
+-  DicomImage *dimage = new DicomImage(dataset, EXS_LittleEndianImplicit, flags); // read all frames
++  DCMTKDicomImage *dimage = new DCMTKDicomImage(dataset, EXS_LittleEndianImplicit, flags); // read all frames
+   if (dimage == NULL) return EC_MemoryExhausted;
+   if (dimage->getStatus() != EIS_Normal)
+   {
+@@ -958,7 +958,7 @@
+ 
+ OFCondition DJLSEncoderBase::compressCookedFrame(
+   DcmPixelSequence *pixelSequence,
+-  DicomImage *dimage,
++  DCMTKDicomImage *dimage,
+   const OFString& /* photometricInterpretation */,
+   DcmOffsetList &offsetList,
+   unsigned long &compressedSize,
+--- a/dcmnet/libsrc/dul.cc
++++ b/dcmnet/libsrc/dul.cc
+@@ -1077,6 +1077,9 @@
+ ** Algorithm:
+ **      Description of the algorithm (optional) and any other notes.
+ */
++// Unsething bounds abort waits while closing cancelled associations.
++int AbortAssociationTimeOut = PRV_DEFAULTTIMEOUT;
++
+ OFCondition
+ DUL_AbortAssociation(DUL_ASSOCIATIONKEY ** callerAssociation)
+ {
+@@ -1095,7 +1098,7 @@
+     OFBool done = OFFalse;
+     while (!done)
+     {
+-        cond = PRV_NextPDUType(association, DUL_NOBLOCK, PRV_DEFAULTTIMEOUT, &pduType); // may return DUL_NETWORKCLOSED.
++        cond = PRV_NextPDUType(association, DUL_NOBLOCK, AbortAssociationTimeOut, &pduType); // may return DUL_NETWORKCLOSED.
+ 
+         if (cond == DUL_NETWORKCLOSED) event = TRANS_CONN_CLOSED;
+         else if (cond == DUL_READTIMEOUT) event = ARTIM_TIMER_EXPIRED;
+--- a/dcmpstat/apps/dcmprscu.cc
++++ b/dcmpstat/apps/dcmprscu.cc
+@@ -246,7 +246,7 @@
+       const char *instanceUID = NULL;
+       const char *imagefile = NULL;
+       OFString theFilename;
+-      DicomImage *dcmimage = NULL;
++      DCMTKDicomImage *dcmimage = NULL;
+       for (size_t currentImage=0; currentImage<numberOfImages; currentImage++)
+       {
+         if (EC_Normal == result) result = stprint.getImageReference(currentImage, studyUID, seriesUID, instanceUID);
+@@ -257,7 +257,7 @@
+           dvi.releaseDatabase(); // destroys the string imagefile points to
+           if (theFilename.size() > 0)
+           {
+-            dcmimage = new DicomImage(theFilename.c_str());
++            dcmimage = new DCMTKDicomImage(theFilename.c_str());
+             if (dcmimage && (EIS_Normal == dcmimage->getStatus()))
+             {
+               // N-SET basic image box
+--- a/dcmpstat/include/dcmtk/dcmpstat/dviface.h
++++ b/dcmpstat/include/dcmtk/dcmpstat/dviface.h
+@@ -35,7 +35,7 @@
+ #include "dcmtk/dcmpstat/dvcache.h"    /* for index file caching */
+ 
+ 
+-class DicomImage;
++class DCMTKDicomImage;
+ class DiDisplayFunction;
+ class DVPSStoredPrint;
+ class DVPSPrintMessageHandler;
+@@ -1622,7 +1622,7 @@
+ 
+     /** pointer to the current hardcopy grayscale image (bitmap information only)
+      */
+-    DicomImage *pHardcopyImage;
++    DCMTKDicomImage *pHardcopyImage;
+ 
+     /** a unique string generated for each instance of this class.
+      *  Used to identify print jobs generated from this instance.
+--- a/dcmpstat/include/dcmtk/dcmpstat/dvpsov.h
++++ b/dcmpstat/include/dcmtk/dcmpstat/dvpsov.h
+@@ -27,7 +27,7 @@
+ #include "dcmtk/dcmdata/dctk.h"
+ #include "dcmtk/dcmpstat/dpdefine.h"
+ 
+-class DicomImage;
++class DCMTKDicomImage;
+ 
+ /** an overlay contained in a presentation state (internal use only).
+  *  This class manages the data structures comprising a single overlay
+--- a/dcmpstat/include/dcmtk/dcmpstat/dvpspl.h
++++ b/dcmpstat/include/dcmtk/dcmpstat/dvpspl.h
+@@ -32,7 +32,7 @@
+ 
+ struct T_DIMSE_Message;
+ 
+-class DicomImage;
++class DCMTKDicomImage;
+ class DiLookupTable;
+ class DcmDataset;
+ 
+@@ -157,22 +157,22 @@
+    */
+   OFCondition invert();
+ 
+-  /** activates the current presentation transform in the given DicomImage.
+-   *  @param image the DicomImage for which the presentation transform is to be set.
++  /** activates the current presentation transform in the given DCMTKDicomImage.
++   *  @param image the DCMTKDicomImage for which the presentation transform is to be set.
+    *  @param printLUT OFTrue if presentation LUT is activated for print bitmap rendering
+    *    (in this case there is no implicit scaling of the input width of the LUT and,
+    *    therefore, the VOI transformation - which is absent for print - is used),
+    *    OFFalse otherwise (softcopy rendering, default)
+    *  @return OFTrue if successful, OFFalse otherwise.
+    */
+-  OFBool activate(DicomImage *image, OFBool printLUT = OFFalse);
+-
+-  /** activates the inverse LUT of the current presentation LUT (if any) in the given DicomImage.
++  OFBool activate(DCMTKDicomImage *image, OFBool printLUT = OFFalse);
++
++  /** activates the inverse LUT of the current presentation LUT (if any) in the given DCMTKDicomImage.
+    *  Presentation LUT shape is not supported by this method.
+-   *  @param image the DicomImage for which the inverse presentation LUT is to be set.
++   *  @param image the DCMTKDicomImage for which the inverse presentation LUT is to be set.
+    *  @return OFTrue if successful, OFFalse otherwise.
+    */
+-  OFBool activateInverseLUT(DicomImage *image);
++  OFBool activateInverseLUT(DCMTKDicomImage *image);
+ 
+   /** creates a DiLookupTable instance from the LUT table
+    *  managed by this object. The returned object must be freed by the caller.
+--- a/dcmpstat/include/dcmtk/dcmpstat/dvpssp.h
++++ b/dcmpstat/include/dcmtk/dcmpstat/dvpssp.h
+@@ -35,7 +35,7 @@
+ #include "dcmtk/dcmpstat/dvpstat.h"		 /* for class DVPresentationState */
+ #include "dcmtk/dcmpstat/dvpspr.h"			 /* for class DVPrintMessageHandler */
+ 
+-class DicomImage;
++class DCMTKDicomImage;
+ class DVPSPresentationLUT;
+ class DVConfiguration;
+ /** the representation of a Stored Print object
+@@ -705,7 +705,7 @@
+   OFCondition printSCUsetBasicImageBox(
+     DVPSPrintMessageHandler& printHandler,
+     size_t idx,
+-    DicomImage& image,
++    DCMTKDicomImage& image,
+     OFBool useMonochrome1=OFFalse);
+ 
+   /** Transmits a DICOM annotation to the printer (Basic Annotation Box N-SET).
+--- a/dcmpstat/include/dcmtk/dcmpstat/dvpstat.h
++++ b/dcmpstat/include/dcmtk/dcmpstat/dvpstat.h
+@@ -26,7 +26,7 @@
+ #include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+ #include "dcmtk/dcmpstat/dcmpstat.h"
+ 
+-class DicomImage;
++class DCMTKDicomImage;
+ class DiDisplayFunction;
+ 
+ /** a Grayscale Softcopy Presentation State.
+@@ -1185,7 +1185,7 @@
+     */
+    static OFCondition activateOverlayHelper(
+      DVPSOverlay& ovl,
+-     DicomImage &image,
++     DCMTKDicomImage &image,
+      OFBool asShutter = OFFalse,
+      Uint16 pvalue = 0);
+ 
+@@ -1203,11 +1203,11 @@
+    /** a pointer to the dcmimage representation of the
+     *  image to which the presentation state is currently applied
+     */
+-   DicomImage *currentImage;
++   DCMTKDicomImage *currentImage;
+    /** a pointer to the dcmimage representation of the (smaller) preview
+     *  image to which the presentation state is currently applied
+     */
+-   DicomImage *previewImage;
++   DCMTKDicomImage *previewImage;
+    /** contains the width of the attached image without consideration of rotation.
+     */
+    unsigned long currentImageWidth;
+--- a/dcmpstat/libsrc/dviface.cc
++++ b/dcmpstat/libsrc/dviface.cc
+@@ -38,7 +38,7 @@
+ #include "dcmtk/dcmnet/diutil.h"      /* for DU_getStringDOElement */
+ #include "dcmtk/dcmpstat/dvpssp.h"    /* for class DVPSStoredPrint */
+ #include "dcmtk/dcmpstat/dvpshlp.h"   /* for class DVPSHelper */
+-#include "dcmtk/dcmimgle/dcmimage.h"  /* for class DicomImage */
++#include "dcmtk/dcmimgle/dcmimage.h"  /* for class DCMTKDicomImage */
+ #include "dcmtk/dcmpstat/dvsighdl.h"  /* for class DVSignatureHandler */
+ #include "dcmtk/dcmsign/dcsignat.h"   /* for class DcmSignature */
+ #include "dcmtk/dcmsr/dsrdoc.h"       /* for class DSRDocument */
+@@ -3086,7 +3086,7 @@
+       const char *filename = getFilename(studyUID, seriesUID, instanceUID);
+       if (filename)
+       {
+-        DicomImage *image = new DicomImage(filename);
++        DCMTKDicomImage *image = new DCMTKDicomImage(filename);
+         if (image != NULL)
+         {
+           if (image->getStatus() == EIS_Normal)
+--- a/dcmpstat/libsrc/dvpspl2.cc
++++ b/dcmpstat/libsrc/dvpspl2.cc
+@@ -23,7 +23,7 @@
+ #include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+ #include "dcmtk/ofstd/ofstring.h"
+ #include "dcmtk/dcmpstat/dvpspl.h"
+-#include "dcmtk/dcmimgle/dcmimage.h"    /* for class DiLookupTable, DicomImage */
++#include "dcmtk/dcmimgle/dcmimage.h"    /* for class DiLookupTable, DCMTKDicomImage */
+ #include "dcmtk/dcmpstat/dvpsdef.h"     /* for constants and macros */
+ #include "dcmtk/dcmnet/dimse.h"
+ 
+@@ -71,7 +71,7 @@
+   return status;
+ }
+ 
+-OFBool DVPSPresentationLUT::activate(DicomImage *image, OFBool printLUT)
++OFBool DVPSPresentationLUT::activate(DCMTKDicomImage *image, OFBool printLUT)
+ {
+   if (image==NULL) return OFFalse;
+ 
+@@ -114,7 +114,7 @@
+   if (result) return OFTrue; else return OFFalse;
+ }
+ 
+-OFBool DVPSPresentationLUT::activateInverseLUT(DicomImage *image)
++OFBool DVPSPresentationLUT::activateInverseLUT(DCMTKDicomImage *image)
+ {
+   int result = 0;
+   if ((image != NULL) && (presentationLUT == DVPSP_table))
+--- a/dcmpstat/libsrc/dvpssp.cc
++++ b/dcmpstat/libsrc/dvpssp.cc
+@@ -1651,7 +1651,7 @@
+ OFCondition DVPSStoredPrint::printSCUsetBasicImageBox(
+     DVPSPrintMessageHandler& printHandler,
+     size_t idx,
+-    DicomImage& image,
++    DCMTKDicomImage& image,
+     OFBool useMonochrome1)
+ {
+   DcmDataset dataset;
+--- a/dcmpstat/libsrc/dvpstat.cc
++++ b/dcmpstat/libsrc/dvpstat.cc
+@@ -26,7 +26,7 @@
+ #include "dcmtk/dcmpstat/dvpstat.h"
+ #include "dcmtk/dcmpstat/dvpsdef.h"     /* for constants and macros */
+ #include "dcmtk/ofstd/ofstring.h"
+-#include "dcmtk/dcmimgle/dcmimage.h"    /* for DicomImage */
++#include "dcmtk/dcmimgle/dcmimage.h"    /* for DCMTKDicomImage */
+ #include "dcmtk/dcmpstat/dvpscu.h"      /* for DVPSCurve */
+ #include "dcmtk/dcmpstat/dvpsvl.h"      /* for DVPSVOILUT */
+ #include "dcmtk/dcmpstat/dvpsvw.h"      /* for DVPSVOIWindow */
+@@ -372,7 +372,7 @@
+       unsigned long height;
+       if (getPrintBitmapWidthHeight(width, height) == EC_Normal)
+       {
+-        DicomImage *image = currentImage;
++        DCMTKDicomImage *image = currentImage;
+ 
+         /* we deactivate any presentation LUT at this point because
+          * getPrintBitmapWidthHeight() calls renderPixelData().
+@@ -396,7 +396,7 @@
+         if ((renderedImageLeft != 1) || (renderedImageRight != (signed long)renderedImageWidth) ||
+             (renderedImageTop != 1) || (renderedImageBottom != (signed long)renderedImageHeight))
+         {
+-          DicomImage *img = currentImage->createMonoOutputImage(currentImageSelectedFrame-1, 12 /*bits*/);
++          DCMTKDicomImage *img = currentImage->createMonoOutputImage(currentImageSelectedFrame-1, 12 /*bits*/);
+           if (img == NULL)
+             img = currentImage;                                 // fall-back solution
+           image = img->createClippedImage(renderedImageLeft - 1, renderedImageTop - 1, renderedImageRight - renderedImageLeft + 1,
+@@ -408,7 +408,7 @@
+         if (((signed long)width != renderedImageRight - renderedImageLeft + 1) ||
+            ((signed long)height != renderedImageBottom - renderedImageTop + 1))
+         {
+-          DicomImage *img = image;
++          DCMTKDicomImage *img = image;
+           image = img->createScaledImage(width, height, 0 /*no interpolation*/, 0 /*ignore aspect ratio*/);
+           if (img != currentImage)
+             delete img;
+@@ -532,8 +532,8 @@
+ {
+   if (!dataset) return EC_IllegalCall;
+ 
+-  // select the right DicomImage constructor depending on the Modality LUT
+-  DicomImage *image = NULL;
++  // select the right DCMTKDicomImage constructor depending on the Modality LUT
++  DCMTKDicomImage *image = NULL;
+   if (useModalityRescale)
+   {
+     Float64 slope = 1.0;
+@@ -549,17 +549,17 @@
+       DCMPSTAT_WARN("unable to evaluate Modality Rescale Slope, ignoring.");
+       intercept = 0.0;
+     }
+-    image = new DicomImage(dataset, dataset->getOriginalXfer(),
++    image = new DCMTKDicomImage(dataset, dataset->getOriginalXfer(),
+       slope, intercept, CIF_UsePresentationState);
+   }
+   else if (useModalityLUT)
+   {
+-    image = new DicomImage(dataset, dataset->getOriginalXfer(),
++    image = new DCMTKDicomImage(dataset, dataset->getOriginalXfer(),
+       modalityLUTData, modalityLUTDescriptor, &modalityLUTExplanation, CIF_UsePresentationState);
+   }
+   else
+   {
+-    image = new DicomImage(dataset, dataset->getOriginalXfer(), CIF_UsePresentationState);
++    image = new DCMTKDicomImage(dataset, dataset->getOriginalXfer(), CIF_UsePresentationState);
+   }
+ 
+   OFCondition result = EC_Normal;
+@@ -2099,7 +2099,7 @@
+ }
+ 
+ 
+-OFCondition DVPresentationState::activateOverlayHelper(DVPSOverlay& ovl, DicomImage &image, OFBool asShutter, Uint16 pvalue)
++OFCondition DVPresentationState::activateOverlayHelper(DVPSOverlay& ovl, DCMTKDicomImage &image, OFBool asShutter, Uint16 pvalue)
+ {
+   Sint16 originX=0;
+   Sint16 originY=0;
+--- a/dcmrt/include/dcmtk/dcmrt/drmimage.h
++++ b/dcmrt/include/dcmtk/dcmrt/drmimage.h
+@@ -29,9 +29,9 @@
+ 
+ /**
+  * Helper class for working with radio therapy image objects. This class provides
+- * a binding between DicomImage and DRTImageIOD. The information from the
++ * a binding between DCMTKDicomImage and DRTImageIOD. The information from the
+  * dataset are managed by the DRTImageIOD base class, but the image itself is
+- * represented through DicomImage.
++ * represented through DCMTKDicomImage.
+  *
+  * @note These functions hopefully simplify working with DRTImageIOD. This is a
+  *   work in progress, please propose any improvements which would make working
+@@ -68,18 +68,18 @@
+      */
+     virtual OFCondition read(DcmItem *dataset);
+ 
+-    /** Get the DicomImage instance for this RT Image.
+-     *  @return the DicomImage instance for this RT Image, may be NULL!
+-     */
+-    DicomImage *getImage()
++    /** Get the DCMTKDicomImage instance for this RT Image.
++     *  @return the DCMTKDicomImage instance for this RT Image, may be NULL!
++     */
++    DCMTKDicomImage *getImage()
+     {
+         return image_;
+     }
+ 
+-    /** Get the DicomImage instance for this RT Image.
+-     *  @return the DicomImage instance for this RT Image, may be NULL!
+-     */
+-    const DicomImage *getImage() const
++    /** Get the DCMTKDicomImage instance for this RT Image.
++     *  @return the DCMTKDicomImage instance for this RT Image, may be NULL!
++     */
++    const DCMTKDicomImage *getImage() const
+     {
+         return image_;
+     }
+@@ -242,7 +242,7 @@
+     /// Reset this class image and DICOM object members
+     virtual void reset();
+ 
+-    /** hide DRTImageIOD::read(). DicomImage() doesn't allow the dataset that was
++    /** hide DRTImageIOD::read(). DCMTKDicomImage() doesn't allow the dataset that was
+      *  used for loading the image to be deleted. Thus, read() cannot work.
+      *  @return always returns EC_IllegalCall since this method should not be called
+      */
+@@ -251,7 +251,7 @@
+         return EC_IllegalCall;
+     }
+ 
+-    /** turn a status code from DicomImage into an OFCondition object.
++    /** turn a status code from DCMTKDicomImage into an OFCondition object.
+      *  @param status status code
+      *  @return OFCondition instance for the given status
+      */
+@@ -275,8 +275,8 @@
+     /// Dataset that image_ is using, or NULL if it uses format_
+     DcmItem       *dataset_;
+ 
+-    /// DicomImage instance representing the image
+-    DicomImage    *image_;
++    /// DCMTKDicomImage instance representing the image
++    DCMTKDicomImage    *image_;
+ };
+ 
+ #endif
+--- a/dcmrt/libsrc/drmimage.cc
++++ b/dcmrt/libsrc/drmimage.cc
+@@ -63,7 +63,7 @@
+         cond = DRTImageIOD::read(*format_.getDataset());
+         if (cond.good())
+         {
+-            image_ = new DicomImage(&format_, format_.getDataset()->getOriginalXfer(),
++            image_ = new DCMTKDicomImage(&format_, format_.getDataset()->getOriginalXfer(),
+                                     CIF_MayDetachPixelData);
+         }
+     }
+@@ -84,7 +84,7 @@
+     if (cond.good())
+     {
+         dataset_ = dataset;
+-        image_ = new DicomImage(dataset_, EXS_Unknown, CIF_MayDetachPixelData);
++        image_ = new DCMTKDicomImage(dataset_, EXS_Unknown, CIF_MayDetachPixelData);
+     }
+     else
+         clear();
+--- a/dcmsign/libsrc/sicert.cc
++++ b/dcmsign/libsrc/sicert.cc
+@@ -511,9 +511,9 @@
+     int n, i, l, o;
+ 
+     if (d == NULL) return EC_IllegalCall;
+-    if (d->type != V_ASN1_GENERALIZEDTIME) return EC_IllegalCall;
+-    l = d->length;
+-    a = (char *)d->data;
++    if (ASN1_STRING_type(d) != V_ASN1_GENERALIZEDTIME) return EC_IllegalCall;
++    l = ASN1_STRING_length(d);
++    a = (char *)ASN1_STRING_get0_data(d);
+     o = 0;
+     /*
+      * GENERALIZEDTIME is similar to UTCTIME except the year is represented
+--- a/dcmsign/libsrc/sitstamp.cc
++++ b/dcmsign/libsrc/sitstamp.cc
+@@ -269,37 +269,13 @@
+ 
+       if (result.good())
+       {
+-        // create nonce object
+-        ASN1_INTEGER *nonce_asn1 = ASN1_INTEGER_new();
+-
++        // Use the public conversion API: ASN.1 storage is opaque in OpenSSL 4.
++        BIGNUM *nonce_bn = BN_bin2bn(nonce_buf, NONCE_LENGTH, NULL);
++        ASN1_INTEGER *nonce_asn1 = nonce_bn ? BN_to_ASN1_INTEGER(nonce_bn, NULL) : NULL;
++        BN_free(nonce_bn);
+         if (nonce_asn1)
+         {
+-          // free memory buffer of nonce_asn1 (we will create a new one)
+-          OPENSSL_free(nonce_asn1->data);
+-
+-          // Find the first non-zero byte in the buffer
+-          int i = 0;
+-          for (i = 0; i < NONCE_LENGTH && !nonce_buf[i]; ++i)
+-            continue;
+-
+-          // create a new memory buffer for nonce_asn1
+-          nonce_asn1->length = NONCE_LENGTH - i;
+-          nonce_asn1->data = OFreinterpret_cast(unsigned char *, OPENSSL_malloc(nonce_asn1->length + 1));
+-          if (NULL != nonce_asn1->data)
+-          {
+-              // copy random data into nonce. The first byte is guaranteed to be nonzero,
+-              // which is necessary because otherwise the field might violate DER encoding.
+-              memcpy(nonce_asn1->data, nonce_buf + i, nonce_asn1->length);
+-          }
+-          else result = EC_MemoryExhausted;
+-
+-          if (result.good())
+-          {
+-            // copy policy object into time stamp query
+-            if (!TS_REQ_set_nonce(tsq_, nonce_asn1)) result = SI_EC_OpenSSLFailure;
+-          }
+-
+-          // delete nonce object
++          if (!TS_REQ_set_nonce(tsq_, nonce_asn1)) result = SI_EC_OpenSSLFailure;
+           ASN1_INTEGER_free(nonce_asn1);
+         }
+         else result = EC_MemoryExhausted;
+@@ -1071,7 +1047,7 @@
+     }
+     else
+     {
+-      X509_EXTENSION *x509ext = TS_TST_INFO_get_ext(tsinfo_, idx);
++      const X509_EXTENSION *x509ext = TS_TST_INFO_get_ext(tsinfo_, idx);
+       if (x509ext == NULL)
+       {
+         DCMSIGN_WARN("timestamp extension " << idx << " cannot be accessed");
+--- a/dcmsr/include/dcmtk/dcmsr/dsrimgvl.h
++++ b/dcmsr/include/dcmtk/dcmsr/dsrimgvl.h
+@@ -43,7 +43,7 @@
+  *  forward declaration  *
+  *-----------------------*/
+ 
+-class DicomImage;
++class DCMTKDicomImage;
+ 
+ 
+ /*---------------------*
+@@ -288,7 +288,7 @@
+      *                  calculated automatically based on the given 'width'.
+      ** @return status, EC_Normal if successful, an error code otherwise
+      */
+-    OFCondition createIconImage(const DicomImage *image,
++    OFCondition createIconImage(const DCMTKDicomImage *image,
+                                 const unsigned long width = 64,
+                                 const unsigned long height = 64);
+ 
+@@ -299,11 +299,11 @@
+ 
+     /** get reference to icon image associated with this image reference value (if any).
+      *  Please note that the icon image might be invalid even if the pointer is not NULL.
+-     *  Therefore, the DicomImage::getStatus() method should always be called to check the
++     *  Therefore, the DCMTKDicomImage::getStatus() method should always be called to check the
+      *  status of the image.
+      ** @return reference to icon image or NULL if none is present
+      */
+-    const DicomImage *getIconImage() const
++    const DCMTKDicomImage *getIconImage() const
+     {
+         return IconImage;
+     }
+@@ -519,7 +519,7 @@
+      *  The currently stored icon image is always deleted first.
+      *  @param  image  pointer to the icon image to be copied (if not NULL)
+      */
+-    void copyIconImage(DicomImage *image);
++    void copyIconImage(DCMTKDicomImage *image);
+ 
+ 
+   private:
+@@ -533,7 +533,7 @@
+     /// composite reference value (UIDs) to real world value mapping object (optional)
+     DSRCompositeReferenceValue RealWorldValueMapping;
+     /// icon image from Icon Image Sequence (optional)
+-    DicomImage *IconImage;
++    DCMTKDicomImage *IconImage;
+ };
+ 
+ 
+--- a/dcmsr/libsrc/dsrimgvl.cc
++++ b/dcmsr/libsrc/dsrimgvl.cc
+@@ -369,7 +369,7 @@
+                 if ((ditem != NULL) && !ditem->isEmpty())
+                 {
+                     /* try to load/process the icon image */
+-                    IconImage = new DicomImage(ditem, EXS_LittleEndianExplicit);
++                    IconImage = new DCMTKDicomImage(ditem, EXS_LittleEndianExplicit);
+                     if (IconImage != NULL)
+                     {
+                         if (IconImage->getStatus() != EIS_Normal)
+@@ -518,7 +518,7 @@
+     {
+         /* try to load specified DICOM image */
+         const unsigned long flags = CIF_UsePartialAccessToPixelData | CIF_NeverAccessEmbeddedOverlays;
+-        DicomImage *image = new DicomImage(filename.c_str(), flags, frame, 1 /*fcount*/);
++        DCMTKDicomImage *image = new DCMTKDicomImage(filename.c_str(), flags, frame, 1 /*fcount*/);
+         if (image != NULL)
+         {
+             /* set VOI window (for monochrome images) */
+@@ -547,7 +547,7 @@
+     {
+         /* try to load specified DICOM image */
+         const unsigned long flags = CIF_UsePartialAccessToPixelData | CIF_NeverAccessEmbeddedOverlays;
+-        DicomImage *image = new DicomImage(object, xfer, flags, frame, 1 /*fcount*/);
++        DCMTKDicomImage *image = new DCMTKDicomImage(object, xfer, flags, frame, 1 /*fcount*/);
+         if (image != NULL)
+         {
+             /* set VOI window (for monochrome images) */
+@@ -563,7 +563,7 @@
+ }
+ 
+ 
+-OFCondition DSRImageReferenceValue::createIconImage(const DicomImage *image,
++OFCondition DSRImageReferenceValue::createIconImage(const DCMTKDicomImage *image,
+                                                     const unsigned long width,
+                                                     const unsigned long height)
+ {
+@@ -792,7 +792,7 @@
+ }
+ 
+ 
+-void DSRImageReferenceValue::copyIconImage(DicomImage *image)
++void DSRImageReferenceValue::copyIconImage(DCMTKDicomImage *image)
+ {
+     /* first, delete the current icon image */
+     delete IconImage;

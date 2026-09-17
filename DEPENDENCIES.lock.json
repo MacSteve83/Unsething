@@ -1,0 +1,56 @@
+{
+  "OpenSSL": {
+    "repository": "https://github.com/openssl/openssl",
+    "ref": "openssl-4.0.2",
+    "url": "https://api.github.com/repos/openssl/openssl/tarball/openssl-4.0.2",
+    "sha256": "e16d372467d75f9db922bce868a9c31f7b2358f4a1918a4a6fd552ed307e6d7e"
+  },
+  "DCMTK": {
+    "repository": "https://github.com/DCMTK/dcmtk",
+    "ref": "DCMTK-3.7.0",
+    "url": "https://api.github.com/repos/DCMTK/dcmtk/tarball/DCMTK-3.7.0",
+    "sha256": "5828bac45e98d7196048b6282a8a10d8eed5881b56112490ad78575eeae8cc1d",
+    "patches": [
+      "script/patches/DCMTK-3.7.0-unsething.patch"
+    ]
+  },
+  "GDCM": {
+    "repository": "https://github.com/malaterre/GDCM",
+    "ref": "v3.2.7",
+    "url": "https://api.github.com/repos/malaterre/GDCM/tarball/v3.2.7",
+    "sha256": "b77ff154261e57ad3e7bd632333fe0f73c4bc311ee4e91bee24dbcd2d20c6d41"
+  },
+  "ITK": {
+    "repository": "https://github.com/InsightSoftwareConsortium/ITK",
+    "ref": "v5.4.7",
+    "url": "https://api.github.com/repos/InsightSoftwareConsortium/ITK/tarball/v5.4.7",
+    "sha256": "d1509136c076ec79e37d2b0e467732c18dffa2c1593b870045ffb17b39bfdfbd"
+  },
+  "VTK": {
+    "repository": "https://github.com/Kitware/VTK",
+    "ref": "v9.7.0",
+    "url": "https://api.github.com/repos/Kitware/VTK/tarball/v9.7.0",
+    "sha256": "37a776f83f05133880254b477e639222f48e019a58295ba7d5e34d1520a9fd9a",
+    "patches": [
+      "script/patches/VTK-9.7.0-unsething.patch"
+    ]
+  },
+  "CharLS": {
+    "repository": "https://github.com/team-charls/charls",
+    "ref": "2.4.4",
+    "url": "https://api.github.com/repos/team-charls/charls/tarball/2.4.4",
+    "sha256": "1a2d4694470c63c6c60945d6dd9d87391dffff1bab4c7280d8665492b4a4e01c"
+  },
+  "OpenJPEG": {
+    "repository": "https://github.com/uclouvain/openjpeg",
+    "ref": "v2.5.4",
+    "url": "https://api.github.com/repos/uclouvain/openjpeg/tarball/v2.5.4",
+    "sha256": "a9d70dd7881e0341d812489239e264a46cbb6f9c7dd3562fd51bbba4bc1ee6f8"
+  },
+  "FeedbackReporter": {
+    "repository": "https://github.com/tcurdt/feedbackreporter",
+    "ref": "92230feade69e1298cd5a8cbc0c8ddd2dc939934",
+    "url": "https://api.github.com/repos/tcurdt/feedbackreporter/tarball/92230feade69e1298cd5a8cbc0c8ddd2dc939934",
+    "sha256": "5359322b1b016ec3d371d2bb5100df1fc030682bf0688c3733eeb4a2592cb1eb"
+  }
+}

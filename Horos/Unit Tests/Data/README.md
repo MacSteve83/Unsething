@@ -1,0 +1,1 @@
+Historical DICOM fixtures are not redistributed in this repository. The legacy DICOMFiles.plist describes the optional upstream fixtures; tests using them require separately obtained test data. Use the self-contained synthetic checks in script/tests for this development branch. Never commit patient images.

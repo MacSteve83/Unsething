@@ -1,0 +1,8 @@
+*.zip binary
+*.icns binary
+*.png binary
+*.tif binary
+*.tiff binary
+LICENSES/** linguist-vendored
+Binaries/dcmtk-source/** linguist-vendored
+script/patches/** linguist-generated
